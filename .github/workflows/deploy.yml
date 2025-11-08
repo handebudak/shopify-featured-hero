@@ -38,7 +38,8 @@ jobs:
         run: |
           shopify theme push \
             --store="$SHOPIFY_STORE" \
-            --password="$SHOPIFY_TOKEN" \
+            --access-token="$SHOPIFY_TOKEN" \
             --theme="$SHOPIFY_THEME_ID" \
-            --allow-live
+            --allow-live \
+            --ignore
 
