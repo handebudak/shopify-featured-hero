@@ -39,7 +39,6 @@ jobs:
           shopify theme push \
             --store="$SHOPIFY_STORE" \
             --password="$SHOPIFY_TOKEN" \
-            --theme-id="$SHOPIFY_THEME_ID" \
-            --allow-live \
-            --path .
+            --theme="$SHOPIFY_THEME_ID" \
+            --allow-live
 
