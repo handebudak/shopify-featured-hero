@@ -33,12 +33,12 @@ jobs:
       - name: Deploy theme to Shopify
         env:
           SHOPIFY_STORE: ${{ secrets.SHOPIFY_STORE }}
-          SHOPIFY_TOKEN: ${{ secrets.SHOPIFY_TOKEN }}
+          THEME_ACCESS_PASSWORD: ${{ secrets.THEME_ACCESS_PASSWORD }}
           SHOPIFY_THEME_ID: ${{ secrets.SHOPIFY_THEME_ID }}
         run: |
           shopify theme push \
             --store="$SHOPIFY_STORE" \
-            --access-token="$SHOPIFY_TOKEN" \
+            --password="$THEME_ACCESS_PASSWORD" \
             --theme="$SHOPIFY_THEME_ID" \
             --allow-live
 
