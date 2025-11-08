@@ -1,0 +1,610 @@
+{%- style -%}
+  /* Desktop visibility (1024px+) */
+  .desktop-hero-section {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .desktop-hero-section {
+      display: block;
+    }
+  }
+
+  /* Mobile visibility (<1024px) */
+  .mobile-hero-section {
+    display: block;
+  }
+  @media (min-width: 1024px) {
+    .mobile-hero-section {
+      display: none;
+    }
+  }
+
+  /* Tablet optimizations (768px - 1023px) */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .mobile-hero-section .flex-shrink-0 {
+      width: 160px !important;
+    }
+    .mobile-hero-section .flex-shrink-0 img {
+      width: 160px !important;
+      height: 215px !important;
+    }
+    .mobile-hero-section .flex {
+      gap: 20px !important;
+      padding-left: 32px !important;
+      padding-right: 32px !important;
+    }
+  }
+
+  /* Hide scrollbar */
+  .products-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .products-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Hide scroll button on wide screens (1600px+) */
+  @media (min-width: 1600px) {
+    .scroll-button-desktop {
+      display: none !important;
+    }
+  }
+
+  /* Custom CSS for color buttons */
+  .color-dot {
+    width: 12px !important;
+    height: 12px !important;
+    border-radius: 50% !important;
+    border: 1px solid #ccc !important;
+    display: block !important;
+    visibility: visible !important;
+  }
+  .color-dot.selected {
+    border-color: #000;
+  }
+  .color-container {
+    display: flex !important;
+    gap: 8px !important;
+    visibility: visible !important;
+  }
+
+  /* Extra assurance for mobile and tablet */
+  @media (max-width: 1199px) {
+    .color-dot {
+      width: 12px !important;
+      height: 12px !important;
+      border-radius: 50% !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+    .color-container {
+      display: flex !important;
+      gap: 8px !important;
+      visibility: visible !important;
+    }
+  }
+{%- endstyle -%}
+
+<section class="bg-white">
+  <!-- DESKTOP -->
+  <div class="desktop-hero-section w-full h-[864px]">
+    <div class="max-w-[1440px] mx-auto h-full">
+      <div class="grid grid-cols-12 h-full gap-3">
+        <!-- Left 6 columns: Hero -->
+        <div class="col-span-6 h-full overflow-hidden">
+          {% if section.settings.hero_image != blank %}
+            <img
+              src="{{ section.settings.hero_image | image_url: width: 998 }}"
+              alt="{{ section.settings.hero_image.alt | escape }}"
+              class="w-full h-full object-cover"
+              width="998"
+              height="1198"
+              loading="lazy"
+            >
+          {% else %}
+            <img
+              src="{{ 'featured-collection-hero.png' | asset_url }}"
+              alt="Hero"
+              class="w-full h-full object-cover"
+              width="998"
+              height="1198"
+              loading="lazy"
+            >
+          {% endif %}
+        </div>
+
+        <!-- Right 6 columns: Content -->
+        <div class="col-span-6 bg-white flex flex-col">
+          <!-- Text Container: Title, Description, Link -->
+          <div class="pt-[96px] pl-[120px] flex-shrink-0">
+            <!-- TITLE -->
+            <h2
+              class="font-avant font-bold text-black mb-[12px]"
+              style="width: 494px; height: 123px; font-size: 31.25px; line-height: 130%;"
+            >
+              {% if section.settings.title != blank %}
+                {{ section.settings.title }}
+              {% else %}
+                Everyday items, we have something to suit every occasion.
+              {% endif %}
+            </h2>
+
+            <!-- DESCRIPTION -->
+            <p
+              class="font-avenir font-normal text-[#666666] mb-[32px] overflow-hidden"
+              style="width: 432px; height: 52px; font-size: 16px; line-height: 160%;"
+            >
+              {% if section.settings.description != blank %}
+                {{ section.settings.description }}
+              {% else %}
+                At suspendisse augue lectus arcu, accumsan ut sit posuere vitae sit tincidunt semper eu proin leo
+                gravida cursus.
+              {% endif %}
+            </p>
+
+            <!-- LINK -->
+            <a
+              href="{% if section.settings.link_url != blank %}{{ section.settings.link_url }}{% else %}#{% endif %}"
+              class="font-avenir font-bold text-black underline decoration-black decoration-2 underline-offset-[10px] inline-block whitespace-nowrap"
+              style="width: 146px; height: 23px; font-size: 16px; line-height: 160%;"
+            >
+              {% if section.settings.link_text != blank %}
+                {{ section.settings.link_text }}
+              {% else %}
+                Shop All Everyday Items
+              {% endif %}
+            </a>
+          </div>
+
+          <!-- Product Container: Product Cards -->
+          <div class="flex-1 flex items-end pb-[95px]">
+            <div
+              class="overflow-y-hidden products-scroll"
+              style="width: 720px; height: 363px; overflow-x: auto; margin-left: 120px;"
+              id="products-scroll-container"
+            >
+              <div class="flex" style="width: max-content; gap: 32px;">
+                {% if section.settings.collection != blank and section.settings.collection.products.size > 0 %}
+                  {% assign show_count = section.settings.products_to_show | default: 3 %}
+                  {% for product in section.settings.collection.products limit: show_count %}
+                    <div class="flex-shrink-0" style="width: 230px;">
+                      <!-- Image -->
+                      <a href="{{ product.url }}">
+                        {% if product.featured_image %}
+                          <img
+                            src="{{ product.featured_image | image_url: width: 400 }}"
+                            alt="{{ product.title | escape }}"
+                            class="object-cover"
+                            style="width: 230px; height: 310px;"
+                            width="400"
+                            height="537"
+                            loading="lazy"
+                          >
+                        {% else %}
+                          <img
+                            src="{{ 'bg-1.png' | asset_url }}"
+                            alt="{{ product.title | escape }}"
+                            class="object-cover"
+                            style="width: 230px; height: 310px;"
+                            width="400"
+                            height="537"
+                            loading="lazy"
+                          >
+                        {% endif %}
+                      </a>
+
+                      <!-- Product Info -->
+                      <div class="mt-[12px]" style="height: 70px;">
+                        <p class="font-avenir text-black line-clamp-1" style="font-size: 12.8px; line-height: 160%;">
+                          {{ product.title }}
+                        </p>
+                        <div class="flex justify-between items-center mt-1">
+                          <p class="font-avenir font-bold text-black" style="font-size: 12.8px; width: 40px;">
+                            {{ product.price | money }}
+                          </p>
+                          <div class="color-container">
+                            <div class="color-dot selected" style="background-color: #99C3CC;"></div>
+                            <div class="color-dot" style="background-color: #CC9999;"></div>
+                            <div class="color-dot" style="background-color: #CB99CC;"></div>
+                            <div class="color-dot" style="background-color: #A6CC99;"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <!-- Placeholder products -->
+                  {% assign placeholder_titles = 'Organic Skinny High Waist Jeans,Organic Skinny High Waist Jeans,Organic Skinny High Waist Jeans'
+                    | split: ','
+                  %}
+                  {% assign placeholder_price = '€33.95' %}
+                  {% for i in (1..3) %}
+                    <div class="flex-shrink-0" style="width: 230px;">
+                      <div>
+                        <img
+                          src="{{ 'bg-' | append: i | append: '.png' | asset_url }}"
+                          alt="{{ placeholder_titles[forloop.index0] }}"
+                          class="object-cover"
+                          style="width: 230px; height: 310px;"
+                          width="400"
+                          height="537"
+                          loading="lazy"
+                        >
+                      </div>
+                      <div class="mt-[12px]" style="height: 70px;">
+                        <p class="font-avenir text-black line-clamp-1" style="font-size: 12.8px; line-height: 160%;">
+                          {{ placeholder_titles[forloop.index0] }}
+                        </p>
+                        <div class="flex justify-between items-center mt-1">
+                          <p class="font-avenir font-bold text-black" style="font-size: 12.8px; width: 40px;">
+                            {{ placeholder_price }}
+                          </p>
+                          <div class="color-container">
+                            <div class="color-dot selected" style="background-color: #99C3CC;"></div>
+                            <div class="color-dot" style="background-color: #CC9999;"></div>
+                            <div class="color-dot" style="background-color: #CB99CC;"></div>
+                            <div class="color-dot" style="background-color: #A6CC99;"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Scroll Button -->
+          <button
+            class="scroll-button-desktop absolute"
+            style="width: 40px; height: 40px; top: 541px; right: 50px; border: 1px solid #0000001A; background: transparent; padding: 12px; cursor: pointer;"
+            onclick="console.log('Button clicked!'); scrollProducts();"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE -->
+  <div class="mobile-hero-section relative">
+    <!-- HERO BANNER (360x437px) -->
+    <div class="relative h-[437px]">
+      {% if section.settings.hero_image != blank %}
+        <img
+          src="{{ section.settings.hero_image | image_url: width: 720 }}"
+          alt="{{ section.settings.hero_image.alt | escape }}"
+          class="w-full h-full object-cover"
+          width="360"
+          height="437"
+          loading="lazy"
+        >
+      {% else %}
+        <img
+          src="{{ 'featured-collection-hero.png' | asset_url }}"
+          alt="Hero"
+          class="w-full h-full object-cover"
+          width="360"
+          height="437"
+          loading="lazy"
+        >
+      {% endif %}
+
+      <!-- GRADIENT OVERLAY -->
+      <div
+        class="absolute inset-0 z-10"
+        style="background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 78.65%) !important; opacity: 0.8 !important;"
+      ></div>
+
+      <!-- TEXT OVERLAY CONTAINER -->
+      <div class="absolute z-20" style="top: 248px; left: 24px; width: 312px;">
+        <!-- TITLE -->
+        <h2
+          class="font-avant font-bold text-white mb-4"
+          style="width: 312px; height: 78px; font-size: 20px; line-height: 130%;"
+        >
+          {% if section.settings.title != blank %}
+            {{ section.settings.title }}
+          {% else %}
+            Everyday items, we have something to suit every occasion.
+          {% endif %}
+        </h2>
+
+        <!-- LINK -->
+        <div style="margin-top: 16px; display: inline-block;">
+          <a
+            href="{% if section.settings.link_url != blank %}{{ section.settings.link_url }}{% else %}#{% endif %}"
+            class="text-white font-avenir font-bold capitalize block whitespace-nowrap"
+            style="
+              font-size: 12.8px;
+              line-height: 100%;
+              letter-spacing: 0%;
+              vertical-align: middle;
+            "
+          >
+            {% if section.settings.link_text != blank %}
+              {{ section.settings.link_text }}
+            {% else %}
+              Shop All Everyday Items
+            {% endif %}
+          </a>
+          <!-- Link line (link width) -->
+          <div
+            style="
+              width: 100% !important;
+              height: 2px !important;
+              background: #FFFFFF !important;
+              margin-top: 6px !important;
+              display: block !important;
+              visibility: visible !important;
+            "
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCT LIST CONTAINER (Overlay on Hero) -->
+    <div
+      class="absolute z-30"
+      style="top: 397px; left: 0; right: 0; width: 100%; height: 293px;"
+    >
+      <div>
+        <div
+          class="flex overflow-x-auto products-scroll pb-8"
+          style="scroll-behavior: smooth; gap: 16px; padding-left: 24px; padding-right: 24px;"
+        >
+          {% if section.settings.collection != blank and section.settings.collection.products.size > 0 %}
+            {% assign show_count = section.settings.products_to_show | default: 3 %}
+            {% for product in section.settings.collection.products limit: show_count %}
+              <!-- PRODUCT CARD (148x293px) -->
+              <div class="flex-shrink-0" style="width: 148px; height: 293px;">
+                <!-- PRODUCT IMAGE (148x200px) -->
+                <a href="{{ product.url }}">
+                  {% if product.featured_image %}
+                    <img
+                      src="{{ product.featured_image | image_url: width: 300 }}"
+                      alt="{{ product.title | escape }}"
+                      class="object-cover"
+                      style="width: 148px; height: 200px;"
+                      width="300"
+                      height="405"
+                      loading="lazy"
+                    >
+                  {% else %}
+                    <img
+                      src="{{ 'bg-' | append: forloop.index | append: '.png' | asset_url }}"
+                      alt="{{ product.title | escape }}"
+                      class="object-cover"
+                      style="width: 148px; height: 200px;"
+                      width="300"
+                      height="405"
+                      loading="lazy"
+                    >
+                  {% endif %}
+                </a>
+
+                <!-- PRODUCT INFO CONTAINER (149x84px) -->
+                <div style="width: 149px; height: 84px; margin-top: 8px;">
+                  <!-- TITLE AND PRICE CONTAINER (149x40px) -->
+                  <div style="width: 149px; margin-bottom: 8px;">
+                    <p
+                      class="font-avenir text-black"
+                      style="font-size: 12.8px; line-height: 160%; margin: 0; padding: 0;"
+                    >
+                      {{ product.title }}
+                    </p>
+                    <p class="font-avenir font-bold text-black" style="font-size: 12.8px; margin: 0; padding: 0;">
+                      {{ product.price | money }}
+                    </p>
+                  </div>
+
+                  <!-- COLOR OPTIONS CONTAINER (66x12px) -->
+                  <div style="width: 66px !important; height: 12px !important; display: flex !important; gap: 8px !important; visibility: visible !important; margin-top: 8px !important;">
+                    <div
+                      style="width: 12px !important; height: 12px !important; border-radius: 50% !important; border: 1px solid #000 !important; background-color: #99C3CC !important; display: block !important; visibility: visible !important;"
+                    ></div>
+                    <div
+                      style="width: 12px !important; height: 12px !important; border-radius: 50% !important; border: 1px solid #ccc !important; background-color: #CC9999 !important; display: block !important; visibility: visible !important;"
+                    ></div>
+                    <div
+                      style="width: 12px !important; height: 12px !important; border-radius: 50% !important; border: 1px solid #ccc !important; background-color: #CB99CC !important; display: block !important; visibility: visible !important;"
+                    ></div>
+                    <div
+                      style="width: 12px !important; height: 12px !important; border-radius: 50% !important; border: 1px solid #ccc !important; background-color: #A6CC99 !important; display: block !important; visibility: visible !important;"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <!-- Placeholder products -->
+            {% assign placeholder_titles = 'Organic Skinny High Waist Jeans,Organic Skinny High Waist Jeans,Organic Skinny High Waist Jeans'
+              | split: ','
+            %}
+            {% assign placeholder_price = '€33.95' %}
+            {% for i in (1..3) %}
+              <div class="flex-shrink-0" style="width: 148px; height: 293px;">
+                <div>
+                  <img
+                    src="{{ 'bg-' | append: i | append: '.png' | asset_url }}"
+                    alt="{{ placeholder_titles[forloop.index0] }}"
+                    class="object-cover"
+                    style="width: 148px; height: 200px;"
+                    width="300"
+                    height="405"
+                    loading="lazy"
+                  >
+                </div>
+                <div style="width: 149px; height: 84px; margin-top: 8px;">
+                  <div style="width: 149px; margin-bottom: 8px;">
+                    <p
+                      class="font-avenir text-black"
+                      style="font-size: 12.8px; line-height: 160%; margin: 0; padding: 0;"
+                    >
+                      {{ placeholder_titles[forloop.index0] }}
+                    </p>
+                    <p class="font-avenir font-bold text-black" style="font-size: 12.8px; margin: 0; padding: 0;">
+                      {{ placeholder_price }}
+                    </p>
+                  </div>
+                  <div style="width: 66px !important; height: 12px !important; display: flex !important; gap: 8px !important; visibility: visible !important;">
+                    <div
+                      style="width: 12px !important; height: 12px !important; border-radius: 50% !important; border: 1px solid #000 !important; background-color: #99C3CC !important; display: block !important; visibility: visible !important;"
+                    ></div>
+                    <div
+                      style="width: 12px !important; height: 12px !important; border-radius: 50% !important; border: 1px solid #ccc !important; background-color: #CC9999 !important; display: block !important; visibility: visible !important;"
+                    ></div>
+                    <div
+                      style="width: 12px !important; height: 12px !important; border-radius: 50% !important; border: 1px solid #ccc !important; background-color: #CB99CC !important; display: block !important; visibility: visible !important;"
+                    ></div>
+                    <div
+                      style="width: 12px !important; height: 12px !important; border-radius: 50% !important; border: 1px solid #ccc !important; background-color: #A6CC99 !important; display: block !important; visibility: visible !important;"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- SPACER (Total height: 437 + 293 = 730px) -->
+    <div style="height: 293px;"></div>
+  </div>
+</section>
+
+<script>
+  // Global scroll function - define first
+  window.scrollProducts = function () {
+    console.log('scrollProducts called!');
+    const container = document.getElementById('products-scroll-container');
+    const scrollButton = document.querySelector('.scroll-button-desktop');
+    if (container) {
+      console.log('Container found, scrolling...');
+      container.scrollBy({ left: 230, behavior: 'smooth' });
+      // Hide button after scrolling
+      if (scrollButton) {
+        scrollButton.style.display = 'none';
+      }
+    } else {
+      console.log('Container not found!');
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const container = document.getElementById('products-scroll-container');
+    const scrollButton = document.querySelector('.scroll-button-desktop');
+    if (!container || !scrollButton) return;
+
+    function checkScrollNeeded() {
+      const screenWidth = window.innerWidth;
+
+      // On wide screens 1600px+: no scroll, show all cards
+      if (screenWidth >= 1600) {
+        container.style.width = '754px'; // 3 cards + gaps
+        container.style.overflowX = 'visible';
+        scrollButton.style.display = 'none'; // Hide scroll button
+      } else {
+        // 1440px and below: Figma design, 3rd card half visible + scroll
+        container.style.width = '720px';
+        container.style.overflowX = 'auto';
+        checkScrollButton(); // Check scroll button state
+      }
+    }
+
+    function checkScrollButton() {
+      const screenWidth = window.innerWidth;
+
+      // Don't show on wide screens
+      if (screenWidth >= 1600) {
+        scrollButton.style.display = 'none';
+        return;
+      }
+
+      // Check if scrolled to the end
+      const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 5;
+
+      if (isAtEnd) {
+        scrollButton.style.display = 'none'; // Hide if at the end
+      } else {
+        scrollButton.style.display = 'block'; // Show otherwise
+      }
+    }
+
+    // Check on page load and window resize
+    checkScrollNeeded();
+    checkScrollButton(); // Check button state
+
+    // Scroll event
+    container.addEventListener('scroll', checkScrollButton);
+
+    let resizeTimeout;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(function () {
+        checkScrollNeeded();
+        checkScrollButton(); // Check button state after resize
+      }, 100);
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Featured Hero Collection",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero Image"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Title"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "link_text",
+      "label": "Link Text"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Link URL"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 1,
+      "max": 25,
+      "step": 1,
+      "default": 3,
+      "label": "Products to show"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Hero Collection"
+    }
+  ]
+}
+{% endschema %}

@@ -3595,3 +3595,7 @@ details-disclosure > details {
     transform: translateX(100%) scaleX(0);
   }
 }
+
+/* Custom Fonts */
+@import url('https://fonts.cdnfonts.com/css/itc-avant-garde-gothic-pro');
+@import url('https://fonts.cdnfonts.com/css/avenir');

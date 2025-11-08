@@ -1,0 +1,15 @@
+{
+  "name": "shopify-test-theme",
+  "version": "1.0.0",
+  "description": "Shopify Dawn theme with Tailwind CSS for case study",
+  "scripts": {
+    "build:css": "tailwindcss -i ./assets/tailwind.css -o ./assets/tailwind-compiled.css --minify",
+    "watch:css": "tailwindcss -i ./assets/tailwind.css -o ./assets/tailwind-compiled.css --watch"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0"
+  }
+}
+

@@ -8,3 +8,8 @@
 ehthumbs.db
 Thumbs.db
 .shopify
+node_modules/
+dist/
+build/
+*.log
+.DS_Store
