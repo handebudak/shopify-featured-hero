@@ -84,19 +84,7 @@
     cursor: pointer !important;
   }
 
-  /* Custom CSS for color buttons */
-  .color-dot {
-    width: 12px !important;
-    height: 12px !important;
-    border-radius: 50% !important;
-    border: 1px solid #ccc !important;
-    display: block !important;
-    visibility: visible !important;
-    cursor: pointer !important;
-  }
-  .color-dot.selected {
-    border-color: #000;
-  }
+  /* Custom CSS for color buttons - Tailwind will handle most styling */
   .color-container {
     display: flex !important;
     gap: 8px !important;
@@ -105,14 +93,6 @@
 
   /* Extra assurance for mobile and tablet */
   @media (max-width: 1199px) {
-    .color-dot {
-      width: 12px !important;
-      height: 12px !important;
-      border-radius: 50% !important;
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-    }
     .color-container {
       display: flex !important;
       gap: 8px !important;
@@ -329,11 +309,11 @@
                                   {% unless rendered_colors contains color_token %}
                                     <button
                                       type="button"
-                                      class="color-dot{% if variant.id == initial_variant.id %} selected{% endif %}"
+                                      class="rounded-full border cursor-pointer{% if variant.id == initial_variant.id %} border-black{% else %} border-gray-300{% endif %}"
                                       data-variant-id="{{ variant.id }}"
                                       data-variant-color="{{ color_value | escape }}"
                                       aria-label="{{ color_value | escape }}"
-                                      style="background-color: {{ color_value | handle | replace: '-', '' }};"
+                                      style="width: 12px; height: 12px; background-color: {{ color_value | handle | replace: '-', '' }};{% if variant.id == initial_variant.id %} box-shadow: inset 0 0 0 1px #FFFFFF;{% endif %}"
                                     ></button>
                                     {% assign rendered_colors = rendered_colors | append: color_token %}
                                   {% endunless %}
@@ -586,11 +566,11 @@
                           {% unless rendered_colors contains color_token %}
                             <button
                               type="button"
-                              class="color-dot{% if variant.id == initial_variant.id %} selected{% endif %}"
+                              class="rounded-full border cursor-pointer{% if variant.id == initial_variant.id %} border-black{% else %} border-gray-300{% endif %}"
                               data-variant-id="{{ variant.id }}"
                               data-variant-color="{{ color_value | escape }}"
                               aria-label="{{ color_value | escape }}"
-                              style="background-color: {{ color_value | handle | replace: '-', '' }};"
+                              style="width: 12px; height: 12px; background-color: {{ color_value | handle | replace: '-', '' }};{% if variant.id == initial_variant.id %} box-shadow: inset 0 0 0 1px #FFFFFF;{% endif %}"
                             ></button>
                             {% assign rendered_colors = rendered_colors | append: color_token %}
                           {% endunless %}
@@ -789,7 +769,7 @@
 
         pills.forEach(function (pill) {
           pill.addEventListener('click', function () {
-            if (pill.classList.contains('selected')) return;
+            if (pill.classList.contains('border-black')) return;
             var variantId = pill.dataset.variantId;
             var variant = productData.variants.find(function (item) {
               return String(item.id) === variantId;
@@ -798,7 +778,14 @@
 
             updateCard(variant);
             pills.forEach(function (btn) {
-              btn.classList.toggle('selected', btn === pill);
+              var isSelected = btn === pill;
+              btn.classList.toggle('border-black', isSelected);
+              btn.classList.toggle('border-gray-300', !isSelected);
+              if (isSelected) {
+                btn.style.boxShadow = 'inset 0 0 0 1px #FFFFFF';
+              } else {
+                btn.style.boxShadow = '';
+              }
             });
           });
         });
