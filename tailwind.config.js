@@ -46,16 +46,16 @@ module.exports = {
         '[200]': '200px',
       },
       fontSize: {
-        31.25: '31.25px',
-        12.8: '12.8px',
+        hero: '31.25px',
+        link: '12.8px',
       },
       lineHeight: {
-        130: '130%',
-        160: '160%',
+        hero: '130%',
+        body: '160%',
       },
       fontFamily: {
-        avant: ['"ITC Avant Garde Gothic Pro"', 'sans-serif'],
-        avenir: ['Avenir', 'sans-serif'],
+        avant: ['"Poppins"', 'sans-serif'],
+        avenir: ['"Inter"', 'sans-serif'],
       },
     },
   },

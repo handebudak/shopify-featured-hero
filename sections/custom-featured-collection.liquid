@@ -19,19 +19,47 @@
     }
   }
 
-  /* Tablet optimizations (768px - 1023px) */
-  @media (min-width: 768px) and (max-width: 1023px) {
+  /* Tablet optimizations (767px - 1023px) */
+  @media (min-width: 767px) and (max-width: 1023px) {
     .mobile-hero-section .flex-shrink-0 {
-      width: 160px !important;
+      width: 280px !important;
+      height: 400px !important;
+      overflow: hidden !important; /* Kart içinde dikey scroll önleme */
     }
     .mobile-hero-section .flex-shrink-0 img {
-      width: 160px !important;
-      height: 215px !important;
+      width: 280px !important;
+      height: 320px !important; /* Aspect ratio korunarak büyütüldü */
+      object-fit: cover !important;
+    }
+    .mobile-hero-section .flex-shrink-0 > div {
+      width: 280px !important;
+    }
+    .mobile-hero-section .flex-shrink-0 > div > div:first-child {
+      width: 280px !important;
     }
     .mobile-hero-section .flex {
-      gap: 20px !important;
-      padding-left: 32px !important;
-      padding-right: 32px !important;
+      gap: 24px !important;
+      padding-left: 24px !important;
+      padding-right: 24px !important;
+    }
+  }
+
+  /* Mobile defaults (<767px) */
+  @media (max-width: 766px) {
+    .mobile-hero-section .flex-shrink-0 {
+      width: 148px !important;
+      height: 293px !important;
+    }
+    .mobile-hero-section .flex-shrink-0 img {
+      width: 148px !important;
+      height: 200px !important;
+    }
+    .mobile-hero-section .flex-shrink-0 > div {
+      width: 149px !important;
+      height: 84px !important;
+    }
+    .mobile-hero-section .flex-shrink-0 > div > div:first-child {
+      width: 149px !important;
     }
   }
 
@@ -51,6 +79,11 @@
     }
   }
 
+  /* Cursor pointer for interactive elements */
+  [data-product-link] {
+    cursor: pointer !important;
+  }
+
   /* Custom CSS for color buttons */
   .color-dot {
     width: 12px !important;
@@ -59,6 +92,7 @@
     border: 1px solid #ccc !important;
     display: block !important;
     visibility: visible !important;
+    cursor: pointer !important;
   }
   .color-dot.selected {
     border-color: #000;
@@ -87,7 +121,11 @@
   }
 {%- endstyle -%}
 
-<section class="bg-white">
+<section
+  class="bg-white"
+  id="featured-hero-{{ section.id }}"
+  data-money-format="{{ shop.money_format | escape }}"
+>
   <!-- DESKTOP -->
   <div class="desktop-hero-section w-full h-[864px]">
     <div class="max-w-[1440px] mx-auto h-full">
@@ -118,11 +156,10 @@
         <!-- Right 6 columns: Content -->
         <div class="col-span-6 bg-white flex flex-col">
           <!-- Text Container: Title, Description, Link -->
-          <div class="pt-[96px] pl-[120px] flex-shrink-0">
+          <div class="flex-shrink-0 pt-[96px] pl-[120px]">
             <!-- TITLE -->
             <h2
-              class="font-avant font-bold text-black mb-[12px]"
-              style="width: 494px; height: 123px; font-size: 31.25px; line-height: 130%;"
+              class="font-avant font-bold text-black text-[31.25px] leading-[130%] tracking-[0] max-w-[494px] mt-0"
             >
               {% if section.settings.title != blank %}
                 {{ section.settings.title }}
@@ -132,30 +169,33 @@
             </h2>
 
             <!-- DESCRIPTION -->
-            <p
-              class="font-avenir font-normal text-[#666666] mb-[32px] overflow-hidden"
-              style="width: 432px; height: 52px; font-size: 16px; line-height: 160%;"
-            >
-              {% if section.settings.description != blank %}
-                {{ section.settings.description }}
-              {% else %}
-                At suspendisse augue lectus arcu, accumsan ut sit posuere vitae sit tincidunt semper eu proin leo
-                gravida cursus.
-              {% endif %}
-            </p>
+            <div class="mt-6 max-w-[432px]">
+              <p class="font-avenir font-normal text-[#666666] text-[16px] leading-[160%] tracking-[0]">
+                {% if section.settings.description != blank %}
+                  {{ section.settings.description }}
+                {% else %}
+                  At suspendisse augue lectus arcu, accumsan ut sit posuere vitae sit tincidunt semper eu proin leo
+                  gravida cursus.
+                {% endif %}
+              </p>
+            </div>
 
             <!-- LINK -->
-            <a
-              href="{% if section.settings.link_url != blank %}{{ section.settings.link_url }}{% else %}#{% endif %}"
-              class="font-avenir font-bold text-black underline decoration-black decoration-2 underline-offset-[10px] inline-block whitespace-nowrap"
-              style="width: 146px; height: 23px; font-size: 16px; line-height: 160%;"
-            >
-              {% if section.settings.link_text != blank %}
-                {{ section.settings.link_text }}
-              {% else %}
-                Shop All Everyday Items
-              {% endif %}
-            </a>
+            <div class="mt-14 flex flex-col items-start gap-[10px] w-fit">
+              <a
+                href="{% if section.settings.link_url != blank %}{{ section.settings.link_url }}{% else %}#{% endif %}"
+                class="font-avenir font-bold text-black text-[12.8px] leading-[100%] capitalize whitespace-nowrap"
+              >
+                {% if section.settings.link_text != blank %}
+                  {{ section.settings.link_text }}
+                {% else %}
+                  Shop All Everyday Items
+                {% endif %}
+              </a>
+              <span
+                class="block h-[1px] bg-black w-full"
+              ></span>
+            </div>
           </div>
 
           <!-- Product Container: Product Cards -->
@@ -163,107 +203,174 @@
             <div
               class="overflow-y-hidden products-scroll"
               style="width: 720px; height: 363px; overflow-x: auto; margin-left: 120px;"
-              id="products-scroll-container"
+              id="products-scroll-container-{{ section.id }}"
             >
               <div class="flex" style="width: max-content; gap: 32px;">
                 {% if section.settings.collection != blank and section.settings.collection.products.size > 0 %}
                   {% assign show_count = section.settings.products_to_show | default: 3 %}
                   {% for product in section.settings.collection.products limit: show_count %}
-                    <div class="flex-shrink-0" style="width: 230px;">
-                      <!-- Image -->
-                      <a href="{{ product.url }}">
-                        {% if product.featured_image %}
-                          <img
-                            src="{{ product.featured_image | image_url: width: 400 }}"
-                            alt="{{ product.title | escape }}"
-                            class="object-cover"
-                            style="width: 230px; height: 310px;"
-                            width="400"
-                            height="537"
-                            loading="lazy"
-                          >
-                        {% else %}
-                          <img
-                            src="{{ 'bg-1.png' | asset_url }}"
-                            alt="{{ product.title | escape }}"
-                            class="object-cover"
-                            style="width: 230px; height: 310px;"
-                            width="400"
-                            height="537"
-                            loading="lazy"
-                          >
+                    {% assign initial_variant = product.selected_or_first_available_variant %}
+                    {% assign featured_card_image = initial_variant.featured_image | default: product.featured_image %}
+                    {% assign color_option_index = null %}
+                    {% unless product.has_only_default_variant %}
+                      {% for option in product.options_with_values %}
+                        {% assign option_name_downcase = option.name | downcase %}
+                        {% if option_name_downcase contains 'color'
+                          or option_name_downcase contains 'colour'
+                          or option_name_downcase contains 'renk'
+                        %}
+                          {% assign color_option_index = forloop.index0 %}
+                          {% break %}
                         {% endif %}
-                      </a>
-
-                      <!-- Product Info -->
-                      <div class="mt-[12px]" style="height: 70px;">
-                        <p class="font-avenir text-black line-clamp-1" style="font-size: 12.8px; line-height: 160%;">
-                          {{ product.title }}
-                        </p>
-                        <div class="flex justify-between items-center mt-1">
-                          <p class="font-avenir font-bold text-black" style="font-size: 12.8px; width: 40px;">
-                            {{ product.price | money }}
-                          </p>
-                          <div class="color-container">
-                            <div class="color-dot selected" style="background-color: #99C3CC;"></div>
-                            <div class="color-dot" style="background-color: #CC9999;"></div>
-                            <div class="color-dot" style="background-color: #CB99CC;"></div>
-                            <div class="color-dot" style="background-color: #A6CC99;"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  {% endfor %}
-                {% else %}
-                  <!-- Placeholder products -->
-                  {% assign placeholder_titles = 'Organic Skinny High Waist Jeans,Organic Skinny High Waist Jeans,Organic Skinny High Waist Jeans'
-                    | split: ','
-                  %}
-                  {% assign placeholder_price = '€33.95' %}
-                  {% for i in (1..3) %}
-                    <div class="flex-shrink-0" style="width: 230px;">
-                      <div>
+                      {% endfor %}
+                      {% if color_option_index == null %}
+                        {% assign color_option_index = 0 %}
+                      {% endif %}
+                    {% endunless %}
+                    {% capture product_payload %}
+                      {
+                        "id": {{ product.id | json }},
+                        "title": {{ product.title | json }},
+                        "url": {{ product.url | json }},
+                        "featured_image": {% if product.featured_image %}{{ product.featured_image | image_url: width: 600 | json }}{% else %}null{% endif %},
+                        "variants": [
+                          {% for variant in product.variants %}
+                            {
+                              "id": {{ variant.id | json }},
+                              "title": {{ variant.title | json }},
+                              "price": {{ variant.price | json }},
+                              "compare_at_price": {{ variant.compare_at_price | json }},
+                              "available": {{ variant.available | json }},
+                              "image": {% if variant.featured_image %}{{ variant.featured_image | image_url: width: 600 | json }}{% else %}null{% endif %},
+                              "options": {{ variant.options | json }}
+                            }{% unless forloop.last %},{% endunless %}
+                          {% endfor %}
+                        ],
+                        "color_option_index": {% if color_option_index != nil %}{{ color_option_index | json }}{% else %}null{% endif %}
+                      }
+                    {% endcapture %}
+                    <div
+                      class="flex-shrink-0 product-card"
+                      style="width: 230px;"
+                      data-product-card
+                      data-product-json="{{ product_payload | strip_newlines | escape }}"
+                      data-initial-variant-id="{{ initial_variant.id }}"
+                      {% if color_option_index != null %}
+                        data-color-option-index="{{ color_option_index }}"
+                      {% endif %}
+                    >
+                      <!-- Image -->
+                      {% if featured_card_image %}
                         <img
-                          src="{{ 'bg-' | append: i | append: '.png' | asset_url }}"
-                          alt="{{ placeholder_titles[forloop.index0] }}"
+                          src="{{ featured_card_image | image_url: width: 400 }}"
+                          alt="{{ initial_variant.title | default: product.title | escape }}"
                           class="object-cover"
                           style="width: 230px; height: 310px;"
                           width="400"
                           height="537"
                           loading="lazy"
+                          data-product-image
                         >
-                      </div>
+                      {% else %}
+                        <img
+                          src="{{ 'bg-1.png' | asset_url }}"
+                          alt="{{ product.title | escape }}"
+                          class="object-cover"
+                          style="width: 230px; height: 310px;"
+                          width="400"
+                          height="537"
+                          loading="lazy"
+                          data-product-image
+                        >
+                      {% endif %}
+
+                      <!-- Product Info -->
                       <div class="mt-[12px]" style="height: 70px;">
-                        <p class="font-avenir text-black line-clamp-1" style="font-size: 12.8px; line-height: 160%;">
-                          {{ placeholder_titles[forloop.index0] }}
-                        </p>
-                        <div class="flex justify-between items-center mt-1">
-                          <p class="font-avenir font-bold text-black" style="font-size: 12.8px; width: 40px;">
-                            {{ placeholder_price }}
+                        <a
+                          href="{{ product.url | append: '?variant=' | append: initial_variant.id }}"
+                          data-product-link
+                        >
+                          <p class="font-avenir text-black line-clamp-1" style="font-size: 12.8px; line-height: 160%;">
+                            {{ product.title }}
                           </p>
-                          <div class="color-container">
-                            <div class="color-dot selected" style="background-color: #99C3CC;"></div>
-                            <div class="color-dot" style="background-color: #CC9999;"></div>
-                            <div class="color-dot" style="background-color: #CB99CC;"></div>
-                            <div class="color-dot" style="background-color: #A6CC99;"></div>
-                          </div>
+                        </a>
+                        <div class="flex justify-between items-center mt-1">
+                          <p
+                            class="font-avenir font-bold text-black text-[12.8px] min-w-[68px]"
+                            data-product-price
+                            {% if section.settings.currency_symbol != blank %}
+                              data-currency-symbol="{{ section.settings.currency_symbol | strip }}"
+                            {% endif %}
+                          >
+                            {% if section.settings.currency_symbol != blank %}
+                              {{ section.settings.currency_symbol | strip -}}
+                              {{- initial_variant.price | money_without_currency }}
+                            {% else %}
+                              {{ initial_variant.price | money }}
+                            {% endif %}
+                          </p>
+                          {% if product.has_only_default_variant %}
+                            <div class="color-container" data-variant-pills></div>
+                          {% else %}
+                            <div class="color-container" data-variant-pills>
+                              {% assign rendered_colors = '' %}
+                              {% for variant in product.variants %}
+                                {% if color_option_index == 0 %}
+                                  {% assign color_value = variant.option1 %}
+                                {% elsif color_option_index == 1 %}
+                                  {% assign color_value = variant.option2 %}
+                                {% elsif color_option_index == 2 %}
+                                  {% assign color_value = variant.option3 %}
+                                {% else %}
+                                  {% assign color_value = variant.option1 %}
+                                {% endif %}
+                                {% if color_value != blank %}
+                                  {% assign color_token = '|' | append: color_value | append: '|' %}
+                                  {% unless rendered_colors contains color_token %}
+                                    <button
+                                      type="button"
+                                      class="color-dot{% if variant.id == initial_variant.id %} selected{% endif %}"
+                                      data-variant-id="{{ variant.id }}"
+                                      data-variant-color="{{ color_value | escape }}"
+                                      aria-label="{{ color_value | escape }}"
+                                      style="background-color: {{ color_value | handle | replace: '-', '' }};"
+                                    ></button>
+                                    {% assign rendered_colors = rendered_colors | append: color_token %}
+                                  {% endunless %}
+                                {% endif %}
+                              {% endfor %}
+                            </div>
+                          {% endif %}
                         </div>
                       </div>
                     </div>
                   {% endfor %}
+                {% else %}
+
                 {% endif %}
               </div>
             </div>
           </div>
 
-          <!-- Scroll Button -->
+          <!-- Scroll Buttons -->
           <button
-            class="scroll-button-desktop absolute"
-            style="width: 40px; height: 40px; top: 541px; right: 50px; border: 1px solid #0000001A; background: transparent; padding: 12px; cursor: pointer;"
-            onclick="console.log('Button clicked!'); scrollProducts();"
+            class="scroll-button-desktop absolute scroll-button-left"
+            style="width: 40px; height: 40px; top: 541px; right: 210px; border: 1px solid #0000001A; background: transparent; padding: 12px; cursor: pointer; display: none;"
+            onclick="scrollProducts(this);"
+            data-direction="left"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M11 12.5L4.5 8L11 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button
+            class="scroll-button-desktop absolute scroll-button-right"
+            style="width: 40px; height: 40px; top: 541px; right: 50px; border: 1px solid #0000001A; background: transparent; padding: 12px; cursor: pointer;"
+            onclick="scrollProducts(this);"
+            data-direction="right"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M5 12.5L11.5 8L5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
         </div>
@@ -298,7 +405,7 @@
       <!-- GRADIENT OVERLAY -->
       <div
         class="absolute inset-0 z-10"
-        style="background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 78.65%) !important; opacity: 0.8 !important;"
+        style="background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 78.65%) !important; opacity: 0.9 !important;"
       ></div>
 
       <!-- TEXT OVERLAY CONTAINER -->
@@ -316,16 +423,10 @@
         </h2>
 
         <!-- LINK -->
-        <div style="margin-top: 16px; display: inline-block;">
+        <div class="mt-6 w-fit">
           <a
             href="{% if section.settings.link_url != blank %}{{ section.settings.link_url }}{% else %}#{% endif %}"
-            class="text-white font-avenir font-bold capitalize block whitespace-nowrap"
-            style="
-              font-size: 12.8px;
-              line-height: 100%;
-              letter-spacing: 0%;
-              vertical-align: middle;
-            "
+            class="text-white font-avenir font-bold text-[12.8px] leading-[100%] capitalize block whitespace-nowrap"
           >
             {% if section.settings.link_text != blank %}
               {{ section.settings.link_text }}
@@ -334,16 +435,9 @@
             {% endif %}
           </a>
           <!-- Link line (link width) -->
-          <div
-            style="
-              width: 100% !important;
-              height: 2px !important;
-              background: #FFFFFF !important;
-              margin-top: 6px !important;
-              display: block !important;
-              visibility: visible !important;
-            "
-          ></div>
+          <span
+            class="block mt-[6px] h-[2px] bg-white w-full"
+          ></span>
         </div>
       </div>
     </div>
@@ -361,117 +455,179 @@
           {% if section.settings.collection != blank and section.settings.collection.products.size > 0 %}
             {% assign show_count = section.settings.products_to_show | default: 3 %}
             {% for product in section.settings.collection.products limit: show_count %}
-              <!-- PRODUCT CARD (148x293px) -->
-              <div class="flex-shrink-0" style="width: 148px; height: 293px;">
-                <!-- PRODUCT IMAGE (148x200px) -->
-                <a href="{{ product.url }}">
-                  {% if product.featured_image %}
-                    <img
-                      src="{{ product.featured_image | image_url: width: 300 }}"
-                      alt="{{ product.title | escape }}"
-                      class="object-cover"
-                      style="width: 148px; height: 200px;"
-                      width="300"
-                      height="405"
-                      loading="lazy"
-                    >
-                  {% else %}
-                    <img
-                      src="{{ 'bg-' | append: forloop.index | append: '.png' | asset_url }}"
-                      alt="{{ product.title | escape }}"
-                      class="object-cover"
-                      style="width: 148px; height: 200px;"
-                      width="300"
-                      height="405"
-                      loading="lazy"
-                    >
+              {% assign initial_variant = product.selected_or_first_available_variant %}
+              {% assign featured_card_image = initial_variant.featured_image | default: product.featured_image %}
+              {% assign color_option_index = null %}
+              {% unless product.has_only_default_variant %}
+                {% for option in product.options_with_values %}
+                  {% assign option_name_downcase = option.name | downcase %}
+                  {% if option_name_downcase contains 'color'
+                    or option_name_downcase contains 'colour'
+                    or option_name_downcase contains 'renk'
+                  %}
+                    {% assign color_option_index = forloop.index0 %}
+                    {% break %}
                   {% endif %}
-                </a>
+                {% endfor %}
+                {% if color_option_index == null %}
+                  {% assign color_option_index = 0 %}
+                {% endif %}
+              {% endunless %}
+              {% capture product_payload %}
+                {
+                  "id": {{ product.id | json }},
+                  "title": {{ product.title | json }},
+                  "url": {{ product.url | json }},
+                  "featured_image": {% if product.featured_image %}{{ product.featured_image | image_url: width: 600 | json }}{% else %}null{% endif %},
+                  "variants": [
+                    {% for variant in product.variants %}
+                      {
+                        "id": {{ variant.id | json }},
+                        "title": {{ variant.title | json }},
+                        "price": {{ variant.price | json }},
+                        "compare_at_price": {{ variant.compare_at_price | json }},
+                        "available": {{ variant.available | json }},
+                        "image": {% if variant.featured_image %}{{ variant.featured_image | image_url: width: 600 | json }}{% else %}null{% endif %},
+                        "options": {{ variant.options | json }}
+                      }{% unless forloop.last %},{% endunless %}
+                    {% endfor %}
+                  ],
+                  "color_option_index": {% if color_option_index != nil %}{{ color_option_index | json }}{% else %}null{% endif %}
+                }
+              {% endcapture %}
+              <!-- PRODUCT CARD (148x293px) -->
+              <div
+                class="flex-shrink-0 product-card"
+                data-product-card
+                data-initial-variant-id="{{ initial_variant.id }}"
+                {% if color_option_index != null %}
+                  data-color-option-index="{{ color_option_index }}"
+                {% endif %}
+                data-product-json="{{ product_payload | strip_newlines | escape }}"
+              >
+                <!-- PRODUCT IMAGE (148x200px) -->
+                {% if featured_card_image %}
+                  <img
+                    src="{{ featured_card_image | image_url: width: 300 }}"
+                    alt="{{ initial_variant.title | default: product.title | escape }}"
+                    class="object-cover"
+                    width="300"
+                    height="405"
+                    loading="lazy"
+                    data-product-image
+                  >
+                {% else %}
+                  <img
+                    src="{{ 'bg-' | append: forloop.index | append: '.png' | asset_url }}"
+                    alt="{{ product.title | escape }}"
+                    class="object-cover"
+                    width="300"
+                    height="405"
+                    loading="lazy"
+                    data-product-image
+                  >
+                {% endif %}
 
                 <!-- PRODUCT INFO CONTAINER (149x84px) -->
-                <div style="width: 149px; height: 84px; margin-top: 8px;">
+                <div style="margin-top: 8px;">
                   <!-- TITLE AND PRICE CONTAINER (149x40px) -->
                   <div style="width: 149px; margin-bottom: 8px;">
+                    <a href="{{ product.url | append: '?variant=' | append: initial_variant.id }}" data-product-link>
+                      <p
+                        class="font-avenir text-black"
+                        style="font-size: 12.8px; line-height: 160%; margin: 0; padding: 0;"
+                      >
+                        {{ product.title }}
+                      </p>
+                    </a>
                     <p
-                      class="font-avenir text-black"
-                      style="font-size: 12.8px; line-height: 160%; margin: 0; padding: 0;"
+                      class="font-avenir font-bold text-black"
+                      style="font-size: 12.8px; margin: 0; padding: 0;"
+                      data-product-price
+                      {% if section.settings.currency_symbol != blank %}
+                        data-currency-symbol="{{ section.settings.currency_symbol | strip }}"
+                      {% endif %}
                     >
-                      {{ product.title }}
-                    </p>
-                    <p class="font-avenir font-bold text-black" style="font-size: 12.8px; margin: 0; padding: 0;">
-                      {{ product.price | money }}
+                      {% if section.settings.currency_symbol != blank %}
+                        {{ section.settings.currency_symbol | strip -}}
+                        {{- initial_variant.price | money_without_currency }}
+                      {% else %}
+                        {{ initial_variant.price | money }}
+                      {% endif %}
                     </p>
                   </div>
 
                   <!-- COLOR OPTIONS CONTAINER (66x12px) -->
-                  <div style="width: 66px !important; height: 12px !important; display: flex !important; gap: 8px !important; visibility: visible !important; margin-top: 8px !important;">
+                  {% if product.has_only_default_variant %}
                     <div
-                      style="width: 12px !important; height: 12px !important; border-radius: 50% !important; border: 1px solid #000 !important; background-color: #99C3CC !important; display: block !important; visibility: visible !important;"
+                      style="width: 66px !important; height: 12px !important;"
+                      class="color-container"
+                      data-variant-pills
                     ></div>
+                  {% else %}
                     <div
-                      style="width: 12px !important; height: 12px !important; border-radius: 50% !important; border: 1px solid #ccc !important; background-color: #CC9999 !important; display: block !important; visibility: visible !important;"
-                    ></div>
-                    <div
-                      style="width: 12px !important; height: 12px !important; border-radius: 50% !important; border: 1px solid #ccc !important; background-color: #CB99CC !important; display: block !important; visibility: visible !important;"
-                    ></div>
-                    <div
-                      style="width: 12px !important; height: 12px !important; border-radius: 50% !important; border: 1px solid #ccc !important; background-color: #A6CC99 !important; display: block !important; visibility: visible !important;"
-                    ></div>
-                  </div>
+                      style="width: 66px !important; height: 12px !important; display: flex !important; gap: 8px !important; visibility: visible !important; margin-top: 8px !important;"
+                      data-variant-pills
+                      class="color-container"
+                    >
+                      {% assign rendered_colors = '' %}
+                      {% for variant in product.variants %}
+                        {% if color_option_index == 0 %}
+                          {% assign color_value = variant.option1 %}
+                        {% elsif color_option_index == 1 %}
+                          {% assign color_value = variant.option2 %}
+                        {% elsif color_option_index == 2 %}
+                          {% assign color_value = variant.option3 %}
+                        {% else %}
+                          {% assign color_value = variant.option1 %}
+                        {% endif %}
+                        {% if color_value != blank %}
+                          {% assign color_token = '|' | append: color_value | append: '|' %}
+                          {% unless rendered_colors contains color_token %}
+                            <button
+                              type="button"
+                              class="color-dot{% if variant.id == initial_variant.id %} selected{% endif %}"
+                              data-variant-id="{{ variant.id }}"
+                              data-variant-color="{{ color_value | escape }}"
+                              aria-label="{{ color_value | escape }}"
+                              style="background-color: {{ color_value | handle | replace: '-', '' }};"
+                            ></button>
+                            {% assign rendered_colors = rendered_colors | append: color_token %}
+                          {% endunless %}
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                  {% endif %}
                 </div>
               </div>
             {% endfor %}
           {% else %}
-            <!-- Placeholder products -->
-            {% assign placeholder_titles = 'Organic Skinny High Waist Jeans,Organic Skinny High Waist Jeans,Organic Skinny High Waist Jeans'
-              | split: ','
-            %}
-            {% assign placeholder_price = '€33.95' %}
-            {% for i in (1..3) %}
-              <div class="flex-shrink-0" style="width: 148px; height: 293px;">
-                <div>
-                  <img
-                    src="{{ 'bg-' | append: i | append: '.png' | asset_url }}"
-                    alt="{{ placeholder_titles[forloop.index0] }}"
-                    class="object-cover"
-                    style="width: 148px; height: 200px;"
-                    width="300"
-                    height="405"
-                    loading="lazy"
-                  >
-                </div>
-                <div style="width: 149px; height: 84px; margin-top: 8px;">
-                  <div style="width: 149px; margin-bottom: 8px;">
-                    <p
-                      class="font-avenir text-black"
-                      style="font-size: 12.8px; line-height: 160%; margin: 0; padding: 0;"
-                    >
-                      {{ placeholder_titles[forloop.index0] }}
-                    </p>
-                    <p class="font-avenir font-bold text-black" style="font-size: 12.8px; margin: 0; padding: 0;">
-                      {{ placeholder_price }}
-                    </p>
-                  </div>
-                  <div style="width: 66px !important; height: 12px !important; display: flex !important; gap: 8px !important; visibility: visible !important;">
-                    <div
-                      style="width: 12px !important; height: 12px !important; border-radius: 50% !important; border: 1px solid #000 !important; background-color: #99C3CC !important; display: block !important; visibility: visible !important;"
-                    ></div>
-                    <div
-                      style="width: 12px !important; height: 12px !important; border-radius: 50% !important; border: 1px solid #ccc !important; background-color: #CC9999 !important; display: block !important; visibility: visible !important;"
-                    ></div>
-                    <div
-                      style="width: 12px !important; height: 12px !important; border-radius: 50% !important; border: 1px solid #ccc !important; background-color: #CB99CC !important; display: block !important; visibility: visible !important;"
-                    ></div>
-                    <div
-                      style="width: 12px !important; height: 12px !important; border-radius: 50% !important; border: 1px solid #ccc !important; background-color: #A6CC99 !important; display: block !important; visibility: visible !important;"
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            {% endfor %}
+
           {% endif %}
         </div>
       </div>
+
+      <!-- Mobile/Tablet Scroll Buttons -->
+      <button
+        class="scroll-button-mobile-tablet absolute scroll-button-left"
+        style="width: 32px; height: 32px; top: 40%; right: 12px; transform: translateY(-50%); border: 1px solid rgba(0,0,0,0.1); background: transparent !important; padding: 8px; cursor: pointer; display: none; z-index: 10;"
+        onclick="scrollProductsMobile(this);"
+        data-direction="left"
+      >
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+          <path d="M11 12.5L4.5 8L11 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button
+        class="scroll-button-mobile-tablet absolute scroll-button-right"
+        style="width: 32px; height: 32px; top: 40%; right: 52px; transform: translateY(-50%); border: 1px solid rgba(0,0,0,0.1); background: transparent !important; padding: 8px; cursor: pointer; z-index: 10;"
+        onclick="scrollProductsMobile(this);"
+        data-direction="right"
+      >
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+          <path d="M5 12.5L11.5 8L5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </div>
 
     <!-- SPACER (Total height: 437 + 293 = 730px) -->
@@ -480,79 +636,206 @@
 </section>
 
 <script>
-  // Global scroll function - define first
-  window.scrollProducts = function () {
-    console.log('scrollProducts called!');
-    const container = document.getElementById('products-scroll-container');
-    const scrollButton = document.querySelector('.scroll-button-desktop');
-    if (container) {
-      console.log('Container found, scrolling...');
-      container.scrollBy({ left: 230, behavior: 'smooth' });
-      // Hide button after scrolling
-      if (scrollButton) {
-        scrollButton.style.display = 'none';
-      }
-    } else {
-      console.log('Container not found!');
-    }
-  };
+  (function () {
+    var sectionId = '{{ section.id }}';
+    var scrollContainerId = 'products-scroll-container-{{ section.id }}';
 
-  document.addEventListener('DOMContentLoaded', function () {
-    const container = document.getElementById('products-scroll-container');
-    const scrollButton = document.querySelector('.scroll-button-desktop');
-    if (!container || !scrollButton) return;
+    window.scrollProducts = function (buttonEl) {
+      if (!buttonEl) return;
+      var sectionEl = buttonEl.closest('section');
+      if (!sectionEl) return;
+      var container = sectionEl.querySelector('#' + scrollContainerId);
+      if (!container) return;
 
-    function checkScrollNeeded() {
-      const screenWidth = window.innerWidth;
+      var direction = buttonEl.dataset.direction || 'right';
+      var scrollAmount = direction === 'left' ? -230 : 230;
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    };
 
-      // On wide screens 1600px+: no scroll, show all cards
-      if (screenWidth >= 1600) {
-        container.style.width = '754px'; // 3 cards + gaps
-        container.style.overflowX = 'visible';
-        scrollButton.style.display = 'none'; // Hide scroll button
-      } else {
-        // 1440px and below: Figma design, 3rd card half visible + scroll
-        container.style.width = '720px';
-        container.style.overflowX = 'auto';
-        checkScrollButton(); // Check scroll button state
-      }
-    }
+    window.scrollProductsMobile = function (buttonEl) {
+      if (!buttonEl) return;
+      var sectionEl = buttonEl.closest('section');
+      if (!sectionEl) return;
+      // Mobil/tablet için farklı container seçici
+      var container = sectionEl.querySelector('.mobile-hero-section .products-scroll');
+      if (!container) return;
 
-    function checkScrollButton() {
-      const screenWidth = window.innerWidth;
+      var direction = buttonEl.dataset.direction || 'right';
+      var scrollAmount = direction === 'left' ? -160 : 160; // Mobil için daha küçük scroll
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    };
 
-      // Don't show on wide screens
-      if (screenWidth >= 1600) {
-        scrollButton.style.display = 'none';
-        return;
-      }
+    document.addEventListener('DOMContentLoaded', function () {
+      var sectionEl = document.getElementById('featured-hero-' + sectionId);
+      if (!sectionEl) return;
 
-      // Check if scrolled to the end
-      const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 5;
-
-      if (isAtEnd) {
-        scrollButton.style.display = 'none'; // Hide if at the end
-      } else {
-        scrollButton.style.display = 'block'; // Show otherwise
-      }
-    }
-
-    // Check on page load and window resize
-    checkScrollNeeded();
-    checkScrollButton(); // Check button state
-
-    // Scroll event
-    container.addEventListener('scroll', checkScrollButton);
-
-    let resizeTimeout;
-    window.addEventListener('resize', function () {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(function () {
-        checkScrollNeeded();
-        checkScrollButton(); // Check button state after resize
-      }, 100);
+      initializeDesktopScroll(sectionEl);
+      initializeMobileTabletScroll(sectionEl);
+      initializeVariantInteractions(sectionEl);
     });
-  });
+
+    function initializeDesktopScroll(sectionEl) {
+      var container = sectionEl.querySelector('#' + scrollContainerId);
+      var scrollButtonLeft = sectionEl.querySelector('.scroll-button-left');
+      var scrollButtonRight = sectionEl.querySelector('.scroll-button-right');
+      if (!container || !scrollButtonLeft || !scrollButtonRight) return;
+
+      function checkScrollNeeded() {
+        var screenWidth = window.innerWidth;
+
+        if (screenWidth >= 1600) {
+          container.style.width = '754px';
+          container.style.overflowX = 'visible';
+          scrollButtonLeft.style.display = 'none';
+          scrollButtonRight.style.display = 'none';
+        } else {
+          container.style.width = '720px';
+          container.style.overflowX = 'auto';
+          checkScrollButtons();
+        }
+      }
+
+      function checkScrollButtons() {
+        var screenWidth = window.innerWidth;
+
+        if (screenWidth >= 1600) {
+          scrollButtonLeft.style.display = 'none';
+          scrollButtonRight.style.display = 'none';
+          return;
+        }
+
+        // Sol buton: Başta değilsek göster (scrollLeft > 0)
+        var canScrollLeft = container.scrollLeft > 5;
+        scrollButtonLeft.style.display = canScrollLeft ? 'block' : 'none';
+
+        // Sağ buton: Sonda değilsek göster
+        var canScrollRight = container.scrollLeft + container.clientWidth < container.scrollWidth - 5;
+        scrollButtonRight.style.display = canScrollRight ? 'block' : 'none';
+      }
+
+      checkScrollNeeded();
+      checkScrollButtons();
+
+      container.addEventListener('scroll', checkScrollButtons);
+
+      var resizeTimeout;
+      window.addEventListener('resize', function () {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function () {
+          checkScrollNeeded();
+          checkScrollButtons();
+        }, 100);
+      });
+    }
+
+    function initializeMobileTabletScroll(sectionEl) {
+      var container = sectionEl.querySelector('.mobile-hero-section .products-scroll');
+      var scrollButtonLeft = sectionEl.querySelector('.scroll-button-mobile-tablet.scroll-button-left');
+      var scrollButtonRight = sectionEl.querySelector('.scroll-button-mobile-tablet.scroll-button-right');
+      if (!container || !scrollButtonLeft || !scrollButtonRight) return;
+
+      function checkMobileTabletScrollButtons() {
+        var canScrollLeft = container.scrollLeft > 5;
+        var canScrollRight = container.scrollLeft + container.clientWidth < container.scrollWidth - 5;
+
+        scrollButtonLeft.style.display = canScrollLeft ? 'block' : 'none';
+        scrollButtonRight.style.display = canScrollRight ? 'block' : 'none';
+      }
+
+      // İlk kontrol
+      checkMobileTabletScrollButtons();
+
+      // Scroll event listener
+      container.addEventListener('scroll', checkMobileTabletScrollButtons);
+
+      // Resize için de kontrol edelim
+      var resizeTimeout;
+      window.addEventListener('resize', function () {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(checkMobileTabletScrollButtons, 100);
+      });
+    }
+
+    function initializeVariantInteractions(sectionEl) {
+      var moneyFormat = sectionEl.dataset.moneyFormat || '{{ shop.money_format | escape }}';
+      var productCards = sectionEl.querySelectorAll('[data-product-card]');
+      if (!productCards.length) return;
+
+      productCards.forEach(function (card) {
+        var productJson = card.dataset.productJson;
+        if (!productJson) return;
+
+        var productData;
+        try {
+          productData = JSON.parse(productJson);
+        } catch (error) {
+          console.error('Failed to parse product JSON', error);
+          return;
+        }
+
+        if (!productData.variants || !productData.variants.length) return;
+
+        var pills = card.querySelectorAll('[data-variant-id]');
+        var priceEl = card.querySelector('[data-product-price]');
+        var imageEl = card.querySelector('[data-product-image]');
+        var linkEl = card.querySelector('[data-product-link]');
+
+        var activeVariant =
+          productData.variants.find(function (variant) {
+            return String(variant.id) === card.dataset.initialVariantId;
+          }) || productData.variants[0];
+
+        updateCard(activeVariant);
+
+        pills.forEach(function (pill) {
+          pill.addEventListener('click', function () {
+            if (pill.classList.contains('selected')) return;
+            var variantId = pill.dataset.variantId;
+            var variant = productData.variants.find(function (item) {
+              return String(item.id) === variantId;
+            });
+            if (!variant) return;
+
+            updateCard(variant);
+            pills.forEach(function (btn) {
+              btn.classList.toggle('selected', btn === pill);
+            });
+          });
+        });
+
+        function updateCard(variant) {
+          if (priceEl) {
+            var currencySymbol = priceEl.dataset.currencySymbol;
+            if (currencySymbol) {
+              var amountNumber = (variant.price / 100).toFixed(2);
+              priceEl.textContent = currencySymbol + amountNumber;
+            } else if (typeof Shopify !== 'undefined' && typeof Shopify.formatMoney === 'function') {
+              priceEl.textContent = Shopify.formatMoney(variant.price, moneyFormat);
+            } else {
+              priceEl.textContent = (variant.price / 100).toFixed(2);
+            }
+          }
+
+          if (linkEl) {
+            linkEl.href = productData.url + '?variant=' + variant.id;
+          }
+
+          if (imageEl) {
+            var variantImage =
+              variant.image || (variant.featured_image && (variant.featured_image.url || variant.featured_image.src));
+            var fallbackImage = productData.featured_image;
+            var imageUrl = variantImage || fallbackImage;
+            if (imageUrl) {
+              imageEl.src = imageUrl;
+            }
+            if (variant.title) {
+              imageEl.alt = variant.title;
+            }
+          }
+        }
+      });
+    }
+  })();
 </script>
 
 {% schema %}
@@ -585,6 +868,12 @@
       "type": "url",
       "id": "link_url",
       "label": "Link URL"
+    },
+    {
+      "type": "text",
+      "id": "currency_symbol",
+      "label": "Currency Symbol",
+      "default": "€"
     },
     {
       "type": "collection",

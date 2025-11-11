@@ -2,7 +2,15 @@
   "sections": {
     "featured_hero": {
       "type": "custom-featured-collection",
-      "settings": {}
+      "settings": {
+        "title": "Everyday items, we have something to suit every occasion.",
+        "description": "<p>At suspendisse augue lectus arcu, accumsan ut sit posuere vitae sit tincidunt semper eu proin leo gravida cursus.</p>",
+        "link_text": "Shop all everyday items",
+        "link_url": "shopify://collections/featured-collection-777",
+        "currency_symbol": "€",
+        "collection": "featured-collection-777",
+        "products_to_show": 3
+      }
     }
   },
   "order": [
