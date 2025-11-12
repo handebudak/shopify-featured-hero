@@ -1,22 +1,52 @@
 {%- style -%}
-  /* Desktop visibility (1024px+) */
+  /* ============================================
+     VISIBILITY
+     ============================================ */
   .desktop-hero-section {
     display: none;
+  }
+  .mobile-hero-section {
+    display: block;
   }
   @media (min-width: 1024px) {
     .desktop-hero-section {
       display: block;
     }
-  }
-
-  /* Mobile visibility (<1024px) */
-  @media (min-width: 1024px) {
     .mobile-hero-section {
       display: none;
     }
   }
 
-  /* Tablet optimizations (767px - 1023px) */
+  /* ============================================
+     SCROLLBAR
+     ============================================ */
+  .products-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .products-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* ============================================
+     INTERACTIVE ELEMENTS
+     ============================================ */
+  [data-product-link] {
+    cursor: pointer !important;
+  }
+
+  /* ============================================
+     COLOR CONTAINER
+     ============================================ */
+  .color-container {
+    display: flex !important;
+    gap: 8px !important;
+    visibility: visible !important;
+  }
+
+  /* ============================================
+     TABLET (767px - 1023px)
+     ============================================ */
   @media (min-width: 767px) and (max-width: 1023px) {
     .mobile-hero-section .flex-shrink-0 {
       width: 280px !important;
@@ -30,18 +60,45 @@
     }
     .mobile-hero-section .flex-shrink-0 > div {
       width: 280px !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
     }
     .mobile-hero-section .flex-shrink-0 > div > div:first-child {
       width: 280px !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
     }
     .mobile-hero-section .flex {
       gap: 24px !important;
       padding-left: 24px !important;
       padding-right: 24px !important;
     }
+    .mobile-hero-section .flex-shrink-0 > div .color-container {
+      height: 12px !important;
+      min-height: 12px !important;
+      width: auto !important;
+      flex-wrap: nowrap !important;
+      overflow: visible !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 8px !important;
+      margin-left: 0 !important;
+      margin-right: auto !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+    .mobile-hero-section .color-container button {
+      flex-shrink: 0 !important;
+      width: 12px !important;
+      height: 12px !important;
+      border-radius: 50% !important;
+    }
   }
 
-  /* Mobile defaults (<767px) */
+  /* ============================================
+     MOBILE (<767px)
+     ============================================ */
   @media (max-width: 766px) {
     .mobile-hero-section .flex-shrink-0 {
       width: 148px !important;
@@ -60,32 +117,13 @@
     }
   }
 
-  /* Hide scrollbar */
-  .products-scroll::-webkit-scrollbar {
-    display: none;
-  }
-  .products-scroll {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  /* Hide scroll button on wide screens (1600px+) */
+  /* ============================================
+     WIDE SCREENS (1600px+)
+     ============================================ */
   @media (min-width: 1600px) {
     .scroll-button-desktop {
       display: none !important;
     }
-  }
-
-  /* Cursor pointer for interactive elements */
-  [data-product-link] {
-    cursor: pointer !important;
-  }
-
-  /* Custom CSS for color buttons - Tailwind will handle most styling */
-  .color-container {
-    display: flex !important;
-    gap: 8px !important;
-    visibility: visible !important;
   }
 {%- endstyle -%}
 
@@ -116,7 +154,6 @@
   <div class="desktop-hero-section w-full h-[864px]">
     <div class="max-w-[1440px] mx-auto h-full">
       <div class="grid grid-cols-12 h-full gap-3">
-        {%- comment -%} Hero Image (Left 6 columns) {%- endcomment -%}
         <div class="col-span-6 h-full overflow-hidden">
           {% if section.settings.hero_image != blank %}
             <img
@@ -139,9 +176,7 @@
           {% endif %}
         </div>
 
-        {%- comment -%} Content Area (Right 6 columns) {%- endcomment -%}
         <div class="col-span-6 bg-white flex flex-col">
-          {%- comment -%} Text Content: Title, Description, Link {%- endcomment -%}
           <div class="flex-shrink-0 pt-[96px] pl-[120px]">
             <h2
               class="font-avant font-bold text-black text-[31.25px] leading-[130%] tracking-[0] max-w-[494px] mt-0"
@@ -168,19 +203,16 @@
             </div>
           </div>
 
-          {%- comment -%} Product Cards Container {%- endcomment -%}
           <div class="flex-1 flex items-end pb-[95px]">
             <div
-              class="overflow-y-hidden products-scroll"
-              style="width: 720px; height: 363px; overflow-x: auto; margin-left: 120px;"
+              class="overflow-y-hidden products-scroll w-[720px] h-[363px] overflow-x-auto ml-[120px]"
               id="products-scroll-container-{{ section.id }}"
             >
-              <div class="flex" style="width: max-content; gap: 32px;">
+              <div class="flex w-max gap-8">
                 {% if has_products %}
                   {% for product in collection_products limit: show_count %}
                     {% assign initial_variant = product.selected_or_first_available_variant %}
                     {% assign featured_card_image = initial_variant.featured_image | default: product.featured_image %}
-                    {%- comment -%} Find color option index {%- endcomment -%}
                     {% assign color_option_index = null %}
                     {% unless product.has_only_default_variant %}
                       {% for option in product.options_with_values %}
@@ -198,7 +230,6 @@
                       {% endif %}
                     {% endunless %}
 
-                    {%- comment -%} Generate product JSON payload for JavaScript {%- endcomment -%}
                     {% capture product_payload %}
                       {
                         "id": {{ product.id | json }},
@@ -222,8 +253,7 @@
                       }
                     {% endcapture %}
                     <div
-                      class="flex-shrink-0 product-card"
-                      style="width: 230px;"
+                      class="flex-shrink-0 product-card w-[230px]"
                       data-product-card
                       data-product-json="{{ product_payload | strip_newlines | escape }}"
                       data-initial-variant-id="{{ initial_variant.id }}"
@@ -231,13 +261,11 @@
                         data-color-option-index="{{ color_option_index }}"
                       {% endif %}
                     >
-                      {%- comment -%} Product Image {%- endcomment -%}
                       {% if featured_card_image %}
                         <img
                           src="{{ featured_card_image | image_url: width: 400 }}"
                           alt="{{ initial_variant.title | default: product.title | escape }}"
-                          class="object-cover"
-                          style="width: 230px; height: 310px;"
+                          class="object-cover w-[230px] h-[310px]"
                           width="400"
                           height="537"
                           loading="lazy"
@@ -247,8 +275,7 @@
                         <img
                           src="{{ 'bg-1.png' | asset_url }}"
                           alt="{{ product.title | escape }}"
-                          class="object-cover"
-                          style="width: 230px; height: 310px;"
+                          class="object-cover w-[230px] h-[310px]"
                           width="400"
                           height="537"
                           loading="lazy"
@@ -256,13 +283,12 @@
                         >
                       {% endif %}
 
-                      {%- comment -%} Product Info: Title, Price, Color Options {%- endcomment -%}
-                      <div class="mt-[12px]" style="height: 70px;">
+                      <div class="mt-[12px] h-[70px]">
                         <a
                           href="{{ product.url | append: '?variant=' | append: initial_variant.id }}"
                           data-product-link
                         >
-                          <p class="font-avenir text-black line-clamp-1" style="font-size: 12.8px; line-height: 160%;">
+                          <p class="font-avenir text-black line-clamp-1 text-[12.8px] leading-[160%]">
                             {{ product.title }}
                           </p>
                         </a>
@@ -301,11 +327,11 @@
                                   {% unless rendered_colors contains color_token %}
                                     <button
                                       type="button"
-                                      class="rounded-full border cursor-pointer{% if variant.id == initial_variant.id %} border-black{% else %} border-gray-300{% endif %}"
+                                      class="rounded-full border cursor-pointer w-[12px] h-[12px]{% if variant.id == initial_variant.id %} border-black{% else %} border-gray-300{% endif %}"
                                       data-variant-id="{{ variant.id }}"
                                       data-variant-color="{{ color_value | escape }}"
                                       aria-label="{{ color_value | escape }}"
-                                      style="width: 12px; height: 12px; background-color: {{ color_value | handle | replace: '-', '' }};{% if variant.id == initial_variant.id %} box-shadow: inset 0 0 0 1px #FFFFFF;{% endif %}"
+                                      style="background-color: {{ color_value | handle | replace: '-', '' }};{% if variant.id == initial_variant.id %} box-shadow: inset 0 0 0 1px #FFFFFF;{% endif %}"
                                     ></button>
                                     {% assign rendered_colors = rendered_colors | append: color_token %}
                                   {% endunless %}
@@ -322,7 +348,6 @@
             </div>
           </div>
 
-          {%- comment -%} Desktop Scroll Buttons {%- endcomment -%}
           <button
             class="scroll-button-desktop absolute scroll-button-left"
             style="width: 40px; height: 40px; top: 541px; right: 210px; border: 1px solid #0000001A; background: transparent; padding: 12px; cursor: pointer; display: none;"
@@ -335,7 +360,7 @@
           </button>
           <button
             class="scroll-button-desktop absolute scroll-button-right"
-            style="width: 40px; height: 40px; top: 541px; right: 50px; border: 1px solid #0000001A; background: transparent; padding: 12px; cursor: pointer;"
+            style="width: 40px; height: 40px; top: 541px; right: 70px; border: 1px solid #0000001A; background: transparent; padding: 12px; cursor: pointer;"
             onclick="scrollProducts(this);"
             data-direction="right"
           >
@@ -354,7 +379,6 @@
     ============================================
   {%- endcomment -%}
   <div class="mobile-hero-section relative">
-    {%- comment -%} Hero Banner with Gradient Overlay {%- endcomment -%}
     <div class="relative h-[437px]">
       {% if section.settings.hero_image != blank %}
         <img
@@ -376,17 +400,14 @@
         >
       {% endif %}
 
-      {%- comment -%} Gradient Overlay {%- endcomment -%}
       <div
         class="absolute inset-0 z-10"
         style="background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 78.65%) !important; opacity: 0.9 !important;"
       ></div>
 
-      {%- comment -%} Text Overlay: Title and Link {%- endcomment -%}
-      <div class="absolute z-20" style="top: 248px; left: 24px; width: 312px;">
+      <div class="absolute z-20 top-[248px] left-6 w-[312px]">
         <h2
-          class="font-avant font-bold text-white mb-4"
-          style="width: 312px; height: 78px; font-size: 20px; line-height: 130%;"
+          class="font-avant font-bold text-white mb-4 w-[312px] h-[78px] text-[20px] leading-[130%]"
         >
           {{ section.settings.title }}
         </h2>
@@ -405,15 +426,13 @@
       </div>
     </div>
 
-    {%- comment -%} Product Cards Container (Overlay on Hero) {%- endcomment -%}
     <div
-      class="absolute z-30"
-      style="top: 397px; left: 0; right: 0; width: 100%; height: 293px;"
+      class="absolute z-30 top-[397px] left-0 right-0 w-full h-[293px]"
     >
       <div>
         <div
-          class="flex overflow-x-auto products-scroll pb-8"
-          style="scroll-behavior: smooth; gap: 16px; padding-left: 24px; padding-right: 24px;"
+          class="flex overflow-x-auto products-scroll pb-8 gap-4 pl-6 pr-6"
+          style="scroll-behavior: smooth;"
         >
           {% if has_products %}
             {% for product in collection_products limit: show_count %}
@@ -457,7 +476,6 @@
                   "color_option_index": {{ color_option_index | json }}
                 }
               {% endcapture %}
-              {%- comment -%} Product Card {%- endcomment -%}
               <div
                 class="flex-shrink-0 product-card"
                 data-product-card
@@ -467,7 +485,6 @@
                 {% endif %}
                 data-product-json="{{ product_payload | strip_newlines | escape }}"
               >
-                {%- comment -%} Product Image {%- endcomment -%}
                 {% if featured_card_image %}
                   <img
                     src="{{ featured_card_image | image_url: width: 300 }}"
@@ -490,21 +507,17 @@
                   >
                 {% endif %}
 
-                {%- comment -%} Product Info: Title, Price, Color Options {%- endcomment -%}
-                <div style="margin-top: 8px;">
-                  {%- comment -%} Title and Price {%- endcomment -%}
-                  <div style="width: 149px; margin-bottom: 8px;">
+                <div class="mt-2">
+                  <div class="w-[149px] mb-2">
                     <a href="{{ product.url | append: '?variant=' | append: initial_variant.id }}" data-product-link>
                       <p
-                        class="font-avenir text-black"
-                        style="font-size: 12.8px; line-height: 160%; margin: 0; padding: 0;"
+                        class="font-avenir text-black text-[12.8px] leading-[160%] m-0 p-0"
                       >
                         {{ product.title }}
                       </p>
                     </a>
                     <p
-                      class="font-avenir font-bold text-black"
-                      style="font-size: 12.8px; margin: 0; padding: 0;"
+                      class="font-avenir font-bold text-black text-[12.8px] m-0 p-0"
                       data-product-price
                       {% if currency_symbol != blank %}
                         data-currency-symbol="{{ currency_symbol }}"
@@ -519,18 +532,15 @@
                     </p>
                   </div>
 
-                  {%- comment -%} Color Options {%- endcomment -%}
                   {% if product.has_only_default_variant %}
                     <div
-                      style="width: 66px !important; height: 12px !important;"
-                      class="color-container"
+                      class="color-container w-[66px] h-3"
                       data-variant-pills
                     ></div>
                   {% else %}
                     <div
-                      style="width: 66px !important; height: 12px !important; display: flex !important; gap: 8px !important; visibility: visible !important; margin-top: 8px !important;"
+                      class="color-container w-[66px] h-3 flex gap-2 visible mt-2"
                       data-variant-pills
-                      class="color-container"
                     >
                       {% assign rendered_colors = '' %}
                       {% for variant in product.variants %}
@@ -548,11 +558,11 @@
                           {% unless rendered_colors contains color_token %}
                             <button
                               type="button"
-                              class="rounded-full border cursor-pointer{% if variant.id == initial_variant.id %} border-black{% else %} border-gray-300{% endif %}"
+                              class="rounded-full border cursor-pointer w-[12px] h-[12px]{% if variant.id == initial_variant.id %} border-black{% else %} border-gray-300{% endif %}"
                               data-variant-id="{{ variant.id }}"
                               data-variant-color="{{ color_value | escape }}"
                               aria-label="{{ color_value | escape }}"
-                              style="width: 12px; height: 12px; background-color: {{ color_value | handle | replace: '-', '' }};{% if variant.id == initial_variant.id %} box-shadow: inset 0 0 0 1px #FFFFFF;{% endif %}"
+                              style="background-color: {{ color_value | handle | replace: '-', '' }};{% if variant.id == initial_variant.id %} box-shadow: inset 0 0 0 1px #FFFFFF;{% endif %}"
                             ></button>
                             {% assign rendered_colors = rendered_colors | append: color_token %}
                           {% endunless %}
@@ -567,7 +577,6 @@
         </div>
       </div>
 
-      {%- comment -%} Mobile/Tablet Scroll Buttons {%- endcomment -%}
       <button
         class="scroll-button-mobile-tablet absolute scroll-button-left"
         style="width: 32px; height: 32px; top: 40%; right: 12px; transform: translateY(-50%); border: 1px solid rgba(0,0,0,0.1); background: transparent !important; padding: 8px; cursor: pointer; display: none; z-index: 10;"
@@ -580,7 +589,7 @@
       </button>
       <button
         class="scroll-button-mobile-tablet absolute scroll-button-right"
-        style="width: 32px; height: 32px; top: 40%; right: 52px; transform: translateY(-50%); border: 1px solid rgba(0,0,0,0.1); background: transparent !important; padding: 8px; cursor: pointer; z-index: 10;"
+        style="width: 32px; height: 32px; top: 40%; right: 75px; transform: translateY(-50%); border: 1px solid rgba(0,0,0,0.1); background: transparent !important; padding: 8px; cursor: pointer; z-index: 10;"
         onclick="scrollProductsMobile(this);"
         data-direction="right"
       >
@@ -590,211 +599,11 @@
       </button>
     </div>
 
-    {%- comment -%} Spacer for proper layout {%- endcomment -%}
-    <div style="height: 293px;"></div>
+    <div class="h-[293px]"></div>
   </div>
 </section>
 
-{%- comment -%}
-  ============================================
-  JAVASCRIPT
-  ============================================
-{%- endcomment -%}
-<script>
-  (function () {
-    var sectionId = '{{ section.id }}';
-    var scrollContainerId = 'products-scroll-container-{{ section.id }}';
-
-    window.scrollProducts = function (buttonEl) {
-      if (!buttonEl) return;
-      var sectionEl = buttonEl.closest('section');
-      if (!sectionEl) return;
-      var container = sectionEl.querySelector('#' + scrollContainerId);
-      if (!container) return;
-
-      var direction = buttonEl.dataset.direction || 'right';
-      var scrollAmount = direction === 'left' ? -230 : 230;
-      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    };
-
-    window.scrollProductsMobile = function (buttonEl) {
-      if (!buttonEl) return;
-      var sectionEl = buttonEl.closest('section');
-      if (!sectionEl) return;
-      var container = sectionEl.querySelector('.mobile-hero-section .products-scroll');
-      if (!container) return;
-
-      var direction = buttonEl.dataset.direction || 'right';
-      var scrollAmount = direction === 'left' ? -160 : 160;
-      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    };
-
-    document.addEventListener('DOMContentLoaded', function () {
-      var sectionEl = document.getElementById('featured-hero-' + sectionId);
-      if (!sectionEl) return;
-
-      initializeDesktopScroll(sectionEl);
-      initializeMobileTabletScroll(sectionEl);
-      initializeVariantInteractions(sectionEl);
-    });
-
-    function initializeDesktopScroll(sectionEl) {
-      var container = sectionEl.querySelector('#' + scrollContainerId);
-      var scrollButtonLeft = sectionEl.querySelector('.scroll-button-left');
-      var scrollButtonRight = sectionEl.querySelector('.scroll-button-right');
-      if (!container || !scrollButtonLeft || !scrollButtonRight) return;
-
-      function checkScrollNeeded() {
-        var screenWidth = window.innerWidth;
-
-        if (screenWidth >= 1600) {
-          container.style.width = '754px';
-          container.style.overflowX = 'visible';
-          scrollButtonLeft.style.display = 'none';
-          scrollButtonRight.style.display = 'none';
-        } else {
-          container.style.width = '720px';
-          container.style.overflowX = 'auto';
-          checkScrollButtons();
-        }
-      }
-
-      function checkScrollButtons() {
-        var canScrollLeft = container.scrollLeft > 5;
-        scrollButtonLeft.style.display = canScrollLeft ? 'block' : 'none';
-
-        var canScrollRight = container.scrollLeft + container.clientWidth < container.scrollWidth - 5;
-        scrollButtonRight.style.display = canScrollRight ? 'block' : 'none';
-      }
-
-      checkScrollNeeded();
-      checkScrollButtons();
-
-      container.addEventListener('scroll', checkScrollButtons);
-
-      var resizeTimeout;
-      window.addEventListener('resize', function () {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(function () {
-          checkScrollNeeded();
-          checkScrollButtons();
-        }, 100);
-      });
-    }
-
-    function initializeMobileTabletScroll(sectionEl) {
-      var container = sectionEl.querySelector('.mobile-hero-section .products-scroll');
-      var scrollButtonLeft = sectionEl.querySelector('.scroll-button-mobile-tablet.scroll-button-left');
-      var scrollButtonRight = sectionEl.querySelector('.scroll-button-mobile-tablet.scroll-button-right');
-      if (!container || !scrollButtonLeft || !scrollButtonRight) return;
-
-      function checkMobileTabletScrollButtons() {
-        var canScrollLeft = container.scrollLeft > 5;
-        var canScrollRight = container.scrollLeft + container.clientWidth < container.scrollWidth - 5;
-
-        scrollButtonLeft.style.display = canScrollLeft ? 'block' : 'none';
-        scrollButtonRight.style.display = canScrollRight ? 'block' : 'none';
-      }
-
-      checkMobileTabletScrollButtons();
-
-      container.addEventListener('scroll', checkMobileTabletScrollButtons);
-
-      var resizeTimeout;
-      window.addEventListener('resize', function () {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(checkMobileTabletScrollButtons, 100);
-      });
-    }
-
-    function initializeVariantInteractions(sectionEl) {
-      var moneyFormat = sectionEl.dataset.moneyFormat || '{{ shop.money_format | escape }}';
-      var productCards = sectionEl.querySelectorAll('[data-product-card]');
-      if (!productCards.length) return;
-
-      productCards.forEach(function (card) {
-        var productJson = card.dataset.productJson;
-        if (!productJson) return;
-
-        var productData;
-        try {
-          productData = JSON.parse(productJson);
-        } catch (error) {
-          console.error('Failed to parse product JSON', error);
-          return;
-        }
-
-        if (!productData.variants || !productData.variants.length) return;
-
-        var pills = card.querySelectorAll('[data-variant-id]');
-        var priceEl = card.querySelector('[data-product-price]');
-        var imageEl = card.querySelector('[data-product-image]');
-        var linkEl = card.querySelector('[data-product-link]');
-
-        var activeVariant =
-          productData.variants.find(function (variant) {
-            return String(variant.id) === card.dataset.initialVariantId;
-          }) || productData.variants[0];
-
-        updateCard(activeVariant);
-
-        pills.forEach(function (pill) {
-          pill.addEventListener('click', function () {
-            if (pill.classList.contains('border-black')) return;
-            var variantId = pill.dataset.variantId;
-            var variant = productData.variants.find(function (item) {
-              return String(item.id) === variantId;
-            });
-            if (!variant) return;
-
-            updateCard(variant);
-            pills.forEach(function (btn) {
-              var isSelected = btn === pill;
-              btn.classList.toggle('border-black', isSelected);
-              btn.classList.toggle('border-gray-300', !isSelected);
-              if (isSelected) {
-                btn.style.boxShadow = 'inset 0 0 0 1px #FFFFFF';
-              } else {
-                btn.style.boxShadow = '';
-              }
-            });
-          });
-        });
-
-        function updateCard(variant) {
-          if (priceEl) {
-            var currencySymbol = priceEl.dataset.currencySymbol;
-            if (currencySymbol) {
-              var amountNumber = (variant.price / 100).toFixed(2);
-              priceEl.textContent = currencySymbol + amountNumber;
-            } else if (typeof Shopify !== 'undefined' && typeof Shopify.formatMoney === 'function') {
-              priceEl.textContent = Shopify.formatMoney(variant.price, moneyFormat);
-            } else {
-              priceEl.textContent = (variant.price / 100).toFixed(2);
-            }
-          }
-
-          if (linkEl) {
-            linkEl.href = productData.url + '?variant=' + variant.id;
-          }
-
-          if (imageEl) {
-            var variantImage =
-              variant.image || (variant.featured_image && (variant.featured_image.url || variant.featured_image.src));
-            var fallbackImage = productData.featured_image;
-            var imageUrl = variantImage || fallbackImage;
-            if (imageUrl) {
-              imageEl.src = imageUrl;
-            }
-            if (variant.title) {
-              imageEl.alt = variant.title;
-            }
-          }
-        }
-      });
-    }
-  })();
-</script>
+<script src="{{ 'featured-collection.js' | asset_url }}" defer></script>
 
 {% schema %}
 {
