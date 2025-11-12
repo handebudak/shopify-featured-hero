@@ -10,9 +10,6 @@
   }
 
   /* Mobile visibility (<1024px) */
-  .mobile-hero-section {
-    display: block;
-  }
   @media (min-width: 1024px) {
     .mobile-hero-section {
       display: none;
@@ -24,11 +21,11 @@
     .mobile-hero-section .flex-shrink-0 {
       width: 280px !important;
       height: 400px !important;
-      overflow: hidden !important; /* Kart içinde dikey scroll önleme */
+      overflow: hidden !important;
     }
     .mobile-hero-section .flex-shrink-0 img {
       width: 280px !important;
-      height: 320px !important; /* Aspect ratio korunarak büyütüldü */
+      height: 320px !important;
       object-fit: cover !important;
     }
     .mobile-hero-section .flex-shrink-0 > div {
@@ -90,27 +87,36 @@
     gap: 8px !important;
     visibility: visible !important;
   }
-
-  /* Extra assurance for mobile and tablet */
-  @media (max-width: 1199px) {
-    .color-container {
-      display: flex !important;
-      gap: 8px !important;
-      visibility: visible !important;
-    }
-  }
 {%- endstyle -%}
+
+{%- comment -%}
+  ============================================
+  VARIABLES
+  ============================================
+{%- endcomment -%}
+{%- assign show_count = section.settings.products_to_show | default: 3 -%}
+{%- assign currency_symbol = section.settings.currency_symbol | strip -%}
+{%- assign collection_products = section.settings.collection.products -%}
+{%- if section.settings.collection != blank and collection_products.size > 0 -%}
+  {%- assign has_products = true -%}
+{%- else -%}
+  {%- assign has_products = false -%}
+{%- endif -%}
 
 <section
   class="bg-white"
   id="featured-hero-{{ section.id }}"
   data-money-format="{{ shop.money_format | escape }}"
 >
-  <!-- DESKTOP -->
+  {%- comment -%}
+    ============================================
+    DESKTOP LAYOUT (≥1024px)
+    ============================================
+  {%- endcomment -%}
   <div class="desktop-hero-section w-full h-[864px]">
     <div class="max-w-[1440px] mx-auto h-full">
       <div class="grid grid-cols-12 h-full gap-3">
-        <!-- Left 6 columns: Hero -->
+        {%- comment -%} Hero Image (Left 6 columns) {%- endcomment -%}
         <div class="col-span-6 h-full overflow-hidden">
           {% if section.settings.hero_image != blank %}
             <img
@@ -133,44 +139,28 @@
           {% endif %}
         </div>
 
-        <!-- Right 6 columns: Content -->
+        {%- comment -%} Content Area (Right 6 columns) {%- endcomment -%}
         <div class="col-span-6 bg-white flex flex-col">
-          <!-- Text Container: Title, Description, Link -->
+          {%- comment -%} Text Content: Title, Description, Link {%- endcomment -%}
           <div class="flex-shrink-0 pt-[96px] pl-[120px]">
-            <!-- TITLE -->
             <h2
               class="font-avant font-bold text-black text-[31.25px] leading-[130%] tracking-[0] max-w-[494px] mt-0"
             >
-              {% if section.settings.title != blank %}
-                {{ section.settings.title }}
-              {% else %}
-                Everyday items, we have something to suit every occasion.
-              {% endif %}
+              {{ section.settings.title }}
             </h2>
 
-            <!-- DESCRIPTION -->
             <div class="mt-6 max-w-[432px]">
               <p class="font-avenir font-normal text-[#666666] text-[16px] leading-[160%] tracking-[0]">
-                {% if section.settings.description != blank %}
-                  {{ section.settings.description }}
-                {% else %}
-                  At suspendisse augue lectus arcu, accumsan ut sit posuere vitae sit tincidunt semper eu proin leo
-                  gravida cursus.
-                {% endif %}
+                {{ section.settings.description }}
               </p>
             </div>
 
-            <!-- LINK -->
             <div class="mt-14 flex flex-col items-start gap-[10px] w-fit">
               <a
-                href="{% if section.settings.link_url != blank %}{{ section.settings.link_url }}{% else %}#{% endif %}"
+                href="{{ section.settings.link_url }}"
                 class="font-avenir font-bold text-black text-[12.8px] leading-[100%] capitalize whitespace-nowrap"
               >
-                {% if section.settings.link_text != blank %}
-                  {{ section.settings.link_text }}
-                {% else %}
-                  Shop All Everyday Items
-                {% endif %}
+                {{ section.settings.link_text }}
               </a>
               <span
                 class="block h-[1px] bg-black w-full"
@@ -178,7 +168,7 @@
             </div>
           </div>
 
-          <!-- Product Container: Product Cards -->
+          {%- comment -%} Product Cards Container {%- endcomment -%}
           <div class="flex-1 flex items-end pb-[95px]">
             <div
               class="overflow-y-hidden products-scroll"
@@ -186,11 +176,11 @@
               id="products-scroll-container-{{ section.id }}"
             >
               <div class="flex" style="width: max-content; gap: 32px;">
-                {% if section.settings.collection != blank and section.settings.collection.products.size > 0 %}
-                  {% assign show_count = section.settings.products_to_show | default: 3 %}
-                  {% for product in section.settings.collection.products limit: show_count %}
+                {% if has_products %}
+                  {% for product in collection_products limit: show_count %}
                     {% assign initial_variant = product.selected_or_first_available_variant %}
                     {% assign featured_card_image = initial_variant.featured_image | default: product.featured_image %}
+                    {%- comment -%} Find color option index {%- endcomment -%}
                     {% assign color_option_index = null %}
                     {% unless product.has_only_default_variant %}
                       {% for option in product.options_with_values %}
@@ -207,6 +197,8 @@
                         {% assign color_option_index = 0 %}
                       {% endif %}
                     {% endunless %}
+
+                    {%- comment -%} Generate product JSON payload for JavaScript {%- endcomment -%}
                     {% capture product_payload %}
                       {
                         "id": {{ product.id | json }},
@@ -226,7 +218,7 @@
                             }{% unless forloop.last %},{% endunless %}
                           {% endfor %}
                         ],
-                        "color_option_index": {% if color_option_index != nil %}{{ color_option_index | json }}{% else %}null{% endif %}
+                        "color_option_index": {{ color_option_index | json }}
                       }
                     {% endcapture %}
                     <div
@@ -239,7 +231,7 @@
                         data-color-option-index="{{ color_option_index }}"
                       {% endif %}
                     >
-                      <!-- Image -->
+                      {%- comment -%} Product Image {%- endcomment -%}
                       {% if featured_card_image %}
                         <img
                           src="{{ featured_card_image | image_url: width: 400 }}"
@@ -264,7 +256,7 @@
                         >
                       {% endif %}
 
-                      <!-- Product Info -->
+                      {%- comment -%} Product Info: Title, Price, Color Options {%- endcomment -%}
                       <div class="mt-[12px]" style="height: 70px;">
                         <a
                           href="{{ product.url | append: '?variant=' | append: initial_variant.id }}"
@@ -278,12 +270,12 @@
                           <p
                             class="font-avenir font-bold text-black text-[12.8px] min-w-[68px]"
                             data-product-price
-                            {% if section.settings.currency_symbol != blank %}
-                              data-currency-symbol="{{ section.settings.currency_symbol | strip }}"
+                            {% if currency_symbol != blank %}
+                              data-currency-symbol="{{ currency_symbol }}"
                             {% endif %}
                           >
-                            {% if section.settings.currency_symbol != blank %}
-                              {{ section.settings.currency_symbol | strip -}}
+                            {% if currency_symbol != blank %}
+                              {{ currency_symbol -}}
                               {{- initial_variant.price | money_without_currency }}
                             {% else %}
                               {{ initial_variant.price | money }}
@@ -325,14 +317,12 @@
                       </div>
                     </div>
                   {% endfor %}
-                {% else %}
-
                 {% endif %}
               </div>
             </div>
           </div>
 
-          <!-- Scroll Buttons -->
+          {%- comment -%} Desktop Scroll Buttons {%- endcomment -%}
           <button
             class="scroll-button-desktop absolute scroll-button-left"
             style="width: 40px; height: 40px; top: 541px; right: 210px; border: 1px solid #0000001A; background: transparent; padding: 12px; cursor: pointer; display: none;"
@@ -358,9 +348,13 @@
     </div>
   </div>
 
-  <!-- MOBILE -->
+  {%- comment -%}
+    ============================================
+    MOBILE LAYOUT (<1024px)
+    ============================================
+  {%- endcomment -%}
   <div class="mobile-hero-section relative">
-    <!-- HERO BANNER (360x437px) -->
+    {%- comment -%} Hero Banner with Gradient Overlay {%- endcomment -%}
     <div class="relative h-[437px]">
       {% if section.settings.hero_image != blank %}
         <img
@@ -382,39 +376,28 @@
         >
       {% endif %}
 
-      <!-- GRADIENT OVERLAY -->
+      {%- comment -%} Gradient Overlay {%- endcomment -%}
       <div
         class="absolute inset-0 z-10"
         style="background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 78.65%) !important; opacity: 0.9 !important;"
       ></div>
 
-      <!-- TEXT OVERLAY CONTAINER -->
+      {%- comment -%} Text Overlay: Title and Link {%- endcomment -%}
       <div class="absolute z-20" style="top: 248px; left: 24px; width: 312px;">
-        <!-- TITLE -->
         <h2
           class="font-avant font-bold text-white mb-4"
           style="width: 312px; height: 78px; font-size: 20px; line-height: 130%;"
         >
-          {% if section.settings.title != blank %}
-            {{ section.settings.title }}
-          {% else %}
-            Everyday items, we have something to suit every occasion.
-          {% endif %}
+          {{ section.settings.title }}
         </h2>
 
-        <!-- LINK -->
         <div class="mt-6 w-fit">
           <a
-            href="{% if section.settings.link_url != blank %}{{ section.settings.link_url }}{% else %}#{% endif %}"
+            href="{{ section.settings.link_url }}"
             class="text-white font-avenir font-bold text-[12.8px] leading-[100%] capitalize block whitespace-nowrap"
           >
-            {% if section.settings.link_text != blank %}
-              {{ section.settings.link_text }}
-            {% else %}
-              Shop All Everyday Items
-            {% endif %}
+            {{ section.settings.link_text }}
           </a>
-          <!-- Link line (link width) -->
           <span
             class="block mt-[6px] h-[2px] bg-white w-full"
           ></span>
@@ -422,7 +405,7 @@
       </div>
     </div>
 
-    <!-- PRODUCT LIST CONTAINER (Overlay on Hero) -->
+    {%- comment -%} Product Cards Container (Overlay on Hero) {%- endcomment -%}
     <div
       class="absolute z-30"
       style="top: 397px; left: 0; right: 0; width: 100%; height: 293px;"
@@ -432,9 +415,8 @@
           class="flex overflow-x-auto products-scroll pb-8"
           style="scroll-behavior: smooth; gap: 16px; padding-left: 24px; padding-right: 24px;"
         >
-          {% if section.settings.collection != blank and section.settings.collection.products.size > 0 %}
-            {% assign show_count = section.settings.products_to_show | default: 3 %}
-            {% for product in section.settings.collection.products limit: show_count %}
+          {% if has_products %}
+            {% for product in collection_products limit: show_count %}
               {% assign initial_variant = product.selected_or_first_available_variant %}
               {% assign featured_card_image = initial_variant.featured_image | default: product.featured_image %}
               {% assign color_option_index = null %}
@@ -472,10 +454,10 @@
                       }{% unless forloop.last %},{% endunless %}
                     {% endfor %}
                   ],
-                  "color_option_index": {% if color_option_index != nil %}{{ color_option_index | json }}{% else %}null{% endif %}
+                  "color_option_index": {{ color_option_index | json }}
                 }
               {% endcapture %}
-              <!-- PRODUCT CARD (148x293px) -->
+              {%- comment -%} Product Card {%- endcomment -%}
               <div
                 class="flex-shrink-0 product-card"
                 data-product-card
@@ -485,7 +467,7 @@
                 {% endif %}
                 data-product-json="{{ product_payload | strip_newlines | escape }}"
               >
-                <!-- PRODUCT IMAGE (148x200px) -->
+                {%- comment -%} Product Image {%- endcomment -%}
                 {% if featured_card_image %}
                   <img
                     src="{{ featured_card_image | image_url: width: 300 }}"
@@ -508,9 +490,9 @@
                   >
                 {% endif %}
 
-                <!-- PRODUCT INFO CONTAINER (149x84px) -->
+                {%- comment -%} Product Info: Title, Price, Color Options {%- endcomment -%}
                 <div style="margin-top: 8px;">
-                  <!-- TITLE AND PRICE CONTAINER (149x40px) -->
+                  {%- comment -%} Title and Price {%- endcomment -%}
                   <div style="width: 149px; margin-bottom: 8px;">
                     <a href="{{ product.url | append: '?variant=' | append: initial_variant.id }}" data-product-link>
                       <p
@@ -524,12 +506,12 @@
                       class="font-avenir font-bold text-black"
                       style="font-size: 12.8px; margin: 0; padding: 0;"
                       data-product-price
-                      {% if section.settings.currency_symbol != blank %}
-                        data-currency-symbol="{{ section.settings.currency_symbol | strip }}"
+                      {% if currency_symbol != blank %}
+                        data-currency-symbol="{{ currency_symbol }}"
                       {% endif %}
                     >
-                      {% if section.settings.currency_symbol != blank %}
-                        {{ section.settings.currency_symbol | strip -}}
+                      {% if currency_symbol != blank %}
+                        {{ currency_symbol -}}
                         {{- initial_variant.price | money_without_currency }}
                       {% else %}
                         {{ initial_variant.price | money }}
@@ -537,7 +519,7 @@
                     </p>
                   </div>
 
-                  <!-- COLOR OPTIONS CONTAINER (66x12px) -->
+                  {%- comment -%} Color Options {%- endcomment -%}
                   {% if product.has_only_default_variant %}
                     <div
                       style="width: 66px !important; height: 12px !important;"
@@ -581,13 +563,11 @@
                 </div>
               </div>
             {% endfor %}
-          {% else %}
-
           {% endif %}
         </div>
       </div>
 
-      <!-- Mobile/Tablet Scroll Buttons -->
+      {%- comment -%} Mobile/Tablet Scroll Buttons {%- endcomment -%}
       <button
         class="scroll-button-mobile-tablet absolute scroll-button-left"
         style="width: 32px; height: 32px; top: 40%; right: 12px; transform: translateY(-50%); border: 1px solid rgba(0,0,0,0.1); background: transparent !important; padding: 8px; cursor: pointer; display: none; z-index: 10;"
@@ -610,11 +590,16 @@
       </button>
     </div>
 
-    <!-- SPACER (Total height: 437 + 293 = 730px) -->
+    {%- comment -%} Spacer for proper layout {%- endcomment -%}
     <div style="height: 293px;"></div>
   </div>
 </section>
 
+{%- comment -%}
+  ============================================
+  JAVASCRIPT
+  ============================================
+{%- endcomment -%}
 <script>
   (function () {
     var sectionId = '{{ section.id }}';
@@ -636,12 +621,11 @@
       if (!buttonEl) return;
       var sectionEl = buttonEl.closest('section');
       if (!sectionEl) return;
-      // Mobil/tablet için farklı container seçici
       var container = sectionEl.querySelector('.mobile-hero-section .products-scroll');
       if (!container) return;
 
       var direction = buttonEl.dataset.direction || 'right';
-      var scrollAmount = direction === 'left' ? -160 : 160; // Mobil için daha küçük scroll
+      var scrollAmount = direction === 'left' ? -160 : 160;
       container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     };
 
@@ -676,19 +660,9 @@
       }
 
       function checkScrollButtons() {
-        var screenWidth = window.innerWidth;
-
-        if (screenWidth >= 1600) {
-          scrollButtonLeft.style.display = 'none';
-          scrollButtonRight.style.display = 'none';
-          return;
-        }
-
-        // Sol buton: Başta değilsek göster (scrollLeft > 0)
         var canScrollLeft = container.scrollLeft > 5;
         scrollButtonLeft.style.display = canScrollLeft ? 'block' : 'none';
 
-        // Sağ buton: Sonda değilsek göster
         var canScrollRight = container.scrollLeft + container.clientWidth < container.scrollWidth - 5;
         scrollButtonRight.style.display = canScrollRight ? 'block' : 'none';
       }
@@ -722,13 +696,10 @@
         scrollButtonRight.style.display = canScrollRight ? 'block' : 'none';
       }
 
-      // İlk kontrol
       checkMobileTabletScrollButtons();
 
-      // Scroll event listener
       container.addEventListener('scroll', checkMobileTabletScrollButtons);
 
-      // Resize için de kontrol edelim
       var resizeTimeout;
       window.addEventListener('resize', function () {
         clearTimeout(resizeTimeout);
